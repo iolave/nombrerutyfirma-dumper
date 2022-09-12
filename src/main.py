@@ -1,6 +1,7 @@
 import sys
-from helpers.cliArgs import cliArgumentsParser
+from helpers.cliArguments import cliArgumentsParser
 
 if __name__ == '__main__':
-    cliArgumentsParser(sys.argv)
+    cliArguments = cliArgumentsParser(sys.argv)
+    print(cliArguments)
     print('Hello World!')

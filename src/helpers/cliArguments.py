@@ -1,3 +1,5 @@
+from typing import Dict, List, Optional
+
 # Input: An array of cli options
 # Output: Python object with all 
 # the given cli arguments in a 
@@ -6,7 +8,7 @@
 # example:
 #   For input: ['--first']
 #   Returns: [{'key': 'first', 'value':None}]
-def cliArgumentsParser(arr):
+def cliArgumentsParser(arr: List[str]) -> List[Dict[str,Optional[str]]]:
     # The first argument argument is the bin file
     # so we pop it as we're not gonna parse it
     arr.pop(0)
@@ -14,7 +16,6 @@ def cliArgumentsParser(arr):
     # Create an empty array to store all key value
     # pairs
     res = []
-
 
     for arg in arr:
         # If equals char is found, splits the arg

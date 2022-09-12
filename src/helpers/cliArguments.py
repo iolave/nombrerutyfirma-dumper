@@ -7,15 +7,15 @@ from typing import Dict, List, Optional
 # 
 # example:
 #   For input: ['--first']
-#   Returns: [{'key': 'first', 'value':None}]
-def cliArgumentsParser(arr: List[str]) -> List[Dict[str,Optional[str]]]:
+#   Returns: {'first': None}
+def cliArgumentsParser(arr: List[str]) -> Dict[str,Optional[str]]:
     # The first argument argument is the bin file
     # so we pop it as we're not gonna parse it
     arr.pop(0)
 
-    # Create an empty array to store all key value
+    # Create an empty object to store all key-value
     # pairs
-    res = []
+    res = { }
 
     for arg in arr:
         # If equals char is found, splits the arg
@@ -26,7 +26,7 @@ def cliArgumentsParser(arr: List[str]) -> List[Dict[str,Optional[str]]]:
             key, value = arg.split('=')
         else:
             key, value = arg, None
-        res.append({"key": key, "value": value})
+        res[key] = value
 
     # Return all the key value pairs
     return(res)

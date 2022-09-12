@@ -1,16 +1,24 @@
-options:
+# options:
 
-  outputType:
-    required: false # Is not required but have a default value
-    value: # Option values allowed 
-      required: false
-      default: console
-      values:
-        - name: console
-        - name: csv
-          options: 
-            destination: 
-              required: true
+#   outputType:
+#     required: false # Is not required but have a default value
+#     value: # Option values allowed 
+#       required: false
+#       default: console
+#       values:
+#         - name: console
+#         - name: csv
+#           options: 
+#             destination: 
+#               required: true
 
-        # - json
-        # - mongodb
+#         # - json
+#         # - mongodb
+
+arguments:
+  - name: --debug
+    required: false
+    requiresValue: false
+  - name: --output
+    required: true
+    requiresValue: true

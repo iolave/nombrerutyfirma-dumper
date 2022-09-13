@@ -16,6 +16,3 @@ if __name__ == '__main__':
 
     # Checking given arguments against cli schema
     cliArgumentsCheck(cliArguments, cliSchema['arguments'])
-        
-
-

@@ -24,6 +24,11 @@ def cliArgumentsParser(arr: List[str]) -> Dict[str,Optional[str]]:
             key, value = arg.split('=')
         else:
             key, value = arg, None
+
+        if key in res:
+            dupedArgError = 'Argument "' + key + '" is already defined'
+            raise Exception(dupedArgError)
+
         res[key] = value
 
     # Return all the key value pairs

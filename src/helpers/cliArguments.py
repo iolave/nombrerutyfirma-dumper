@@ -1,4 +1,6 @@
-from typing import Dict, List, Optional
+from ast import arguments
+from typing import Any, Dict, List, Optional
+from .list import listToString
 
 # Input: An array of cli options
 # Output: Python object with all 
@@ -6,13 +8,9 @@ from typing import Dict, List, Optional
 # key value style 
 # 
 # example:
-#   For input: ['--first']
-#   Returns: {'first': None}
+#   For input: ['--first=value']
+#   Returns: {'--first': 'Value'}
 def cliArgumentsParser(arr: List[str]) -> Dict[str,Optional[str]]:
-    # The first argument argument is the bin file
-    # so we pop it as we're not gonna parse it
-    arr.pop(0)
-
     # Create an empty object to store all key-value
     # pairs
     res = { }
@@ -30,3 +28,40 @@ def cliArgumentsParser(arr: List[str]) -> Dict[str,Optional[str]]:
 
     # Return all the key value pairs
     return(res)
+
+# TODO: Add a not valid arguments checker
+def cliArgumentsCheck(args: Dict[str,Optional[str]], schema: Any):
+    for option in schema:
+        cliKey = option['name']
+
+        existsArgument = False
+        if option['name'] in args.keys(): 
+            existsArgument = True
+            cliValue = args[option['name']]
+
+        if option['required'] == True:
+            if existsArgument == False:
+                requiredArgError = 'Argument ' + cliKey + ' is required'
+                raise Exception(requiredArgError)
+
+        if option['requiresValue'] == True and cliValue == None:
+            requiredValueError = 'Argument ' + cliKey + ' requires value. Eg: ' + cliKey + '=value'
+            raise Exception(requiredValueError)
+
+        if 'allowedValues' in option.keys():
+            if option['allowedValues'] == None:
+                schemaError = 'Key allowedValues can not be of type None'
+                raise Exception(schemaError)
+
+            allowedValues = list(map(lambda e: e['name'], option['allowedValues']))
+            if args[cliKey] not in allowedValues:
+                allowedValues = list(map(lambda e: e['name'], option['allowedValues']))
+                allowedValuesStr = listToString(allowedValues)
+                allowedValuesError = 'Allowed values for ' + cliKey + ' option are: ' + allowedValuesStr + '. Eg: ' + cliKey + '=value'
+                raise Exception(allowedValuesError)
+
+            for values in option['allowedValues']:
+                if values['name'] == args[cliKey]: 
+                    if 'arguments' in values.keys():
+                        cliArgumentsCheck(args, values['arguments'])
+                        break

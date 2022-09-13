@@ -22,3 +22,16 @@ arguments:
   - name: --output
     required: true
     requiresValue: true
+    allowedValues:
+      - name: console
+      - name: csv
+        arguments:
+          - name: --destination
+            required: true
+            requiresValue: true
+      - name: json
+        arguments:
+          - name: --destination
+            required: true
+            requiresValue: true
+

@@ -1,1 +1,6 @@
+# Remove after porting app lang
 .mypy_cache
+build
+dist
+node_modules
+environment

@@ -2,6 +2,9 @@ arguments:
   - name: --debug
     required: false
     requiresValue: false
+  - name: --input
+    required: true
+    requiresValue: true
   - name: --output
     required: true
     requiresValue: true
@@ -17,4 +20,3 @@ arguments:
           - name: --destination
             required: true
             requiresValue: true
-

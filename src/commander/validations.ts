@@ -6,7 +6,7 @@ export const validateOptions = (programOpts: any): undefined|string => {
         const ruleName = ruleObject[0]
         const rules = ruleObject[1]
 
-        const allowedOptions = options.filter(opt => opt.rule === ruleName)
+        const allowedOptions = options.filter(opt => opt.type === ruleName)
 
         const givenOpts: Array<object> = []
         Object.entries(programOpts).forEach(opt => {

@@ -1,32 +1,49 @@
-import { program } from 'commander'
-import { inputOptions } from './config'
+import { program, Option } from 'commander'
+import { options } from './config'
 import { name, version } from '../../package.json';
 import { validateOptions } from './validations';
 
 program.name(name)
-
-program.option('Input options:')
-inputOptions.options.forEach(opt => {
-    program.option(opt.flags, opt.description, opt.defaultValue)
-})
-program.option(' ')
-
-program.option('Output options:')
-program.option('-o --output <file_path>', 'Output result to a destination file')
-// program.option('--mongodb <uri>', 'Insert output mongodb ')
-program.option(' ')
-
-program.option('Other options:')
-program.option('-v --verbose', 'Output more log')
-program.version(version)
-
 program.allowExcessArguments(false)
 program.allowUnknownOption(false)
 program.showHelpAfterError(true)
 
+program.option('Input options:')
+options.filter(opt => opt.type.match(/option\.input.*/)).forEach(opt => {
+    const option = new Option(opt.flags)
+    option.description = opt.description
+    option.defaultValue = opt.defaultValue
+    if(opt.choices) option.choices(opt.choices)
+    program.addOption(option)
+})
+program.option(' ')
+
+program.option('Output options:')
+options.filter(opt => opt.type.match(/option\.output.*/)).forEach(opt => {
+    const option = new Option(opt.flags)
+    option.description = opt.description
+    option.defaultValue = opt.defaultValue
+    if(opt.choices) option.choices(opt.choices)
+    program.addOption(option)
+})
+program.option(' ')
+
+program.option('Other options:')
+options.filter(opt => opt.type.match(/option\.other.*/)).forEach(opt => {
+    const option = new Option(opt.flags)
+    option.description = opt.description
+    option.defaultValue = opt.defaultValue
+    if(opt.choices) option.choices(opt.choices)
+    program.addOption(option)
+})
+program.version(`Version: ${version}`)
+program.option(' ')
+
 program.action(() => {
-    const validationError = validateOptions(program.opts())
-    if(validationError) program.error(validationError)
+    const errMessage = validateOptions(program.opts())
+    if(errMessage) program.error(errMessage)
+
+
 })
 
 export default program

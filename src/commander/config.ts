@@ -4,7 +4,13 @@ export const optionsRules = {
     'option.input': {
         requiredOption,
         dontAllowMultipleOptions
-    }
+    },
+    'option.output': {
+        requiredOption,
+        dontAllowMultipleOptions
+    },
+    'option.output.mongodb': {
+    },
 }
 
 export const inputOptions = {
@@ -31,24 +37,59 @@ export const inputOptions = {
 
 export const options = [
     {
-        rule: 'option.input',
+        type: 'option.input',
         name: 'ruts',
         flags: '-r --ruts <ruts...>',
         description: 'Input rut(s) to be queryied',
-        defaultValue: undefined
+        defaultValue: undefined,
+        choices: undefined,
     },
     {
-        rule: 'option.input',
+        type: 'option.input',
         name: 'file',
         flags: '-f --file <file_path>',
         description: 'Input file containing ruts to be queryied',
-        defaultValue: undefined
+        defaultValue: undefined,
+        choices: undefined,
     },
     {
-        rule: 'option.output',
-        name: 'file',
-        flags: '-f --file <file_path>',
-        description: 'Input file containing ruts to be queryied',
-        defaultValue: undefined
+        type: 'option.output',
+        name: 'output',
+        flags: '-o --output <file_path>',
+        description: 'Output result to a destination file',
+        defaultValue: undefined,
+        choices: undefined,
+    },
+    {
+        type: 'option.output',
+        name: 'console',
+        flags: '--console',
+        description: 'Output result to the terminal',
+        defaultValue: undefined,
+        choices: undefined,
+    },
+    {
+        type: 'option.output',
+        name: 'database',
+        flags: '--database <database>',
+        description: 'Output result to a desired database',
+        defaultValue: undefined,
+        choices: ['mongodb'],
+    },
+    {
+        type: 'option.output.mongodb',
+        name: 'uri',
+        flags: '--uri <uri>',
+        description: 'Uri string',
+        defaultValue: undefined,
+        choices: undefined,
+    },
+    {
+        type: 'option.other',
+        name: 'verbose',
+        flags: '-v --verbose',
+        description: 'Output more log',
+        defaultValue: undefined,
+        choices: undefined,
     },
 ]

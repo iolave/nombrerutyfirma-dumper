@@ -25,7 +25,8 @@ program.allowUnknownOption(false)
 program.showHelpAfterError(true)
 
 program.action(() => {
-    validateOptions(program.opts())
+    const validationError = validateOptions(program.opts())
+    if(validationError) program.error(validationError)
 })
 
 export default program

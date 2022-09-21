@@ -1,15 +1,17 @@
-import { dontAllowMultipleOptions, requiredOption } from './rules';
+import { dontAllowMultipleOptions, requiredOption, requiresMongodb } from './rules';
 
 export const optionsRules = {
     'option.input': {
         requiredOption,
-        dontAllowMultipleOptions
+        dontAllowMultipleOptions,
     },
     'option.output': {
         requiredOption,
-        dontAllowMultipleOptions
+        dontAllowMultipleOptions,
     },
-    'option.output.mongodb': {
+    'option.output.db.mongodb': {
+        requiresMongodb,
+        requiredOption
     },
 }
 
@@ -72,12 +74,12 @@ export const options = [
         type: 'option.output',
         name: 'database',
         flags: '--database <database>',
-        description: 'Output result to a desired database',
+        description: 'Output result to a desired database engine',
         defaultValue: undefined,
         choices: ['mongodb'],
     },
     {
-        type: 'option.output.mongodb',
+        type: 'option.output.db.mongodb',
         name: 'uri',
         flags: '--uri <uri>',
         description: 'Uri string',

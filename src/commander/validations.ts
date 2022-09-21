@@ -10,6 +10,7 @@ export const validateOptions = (programOpts: any): undefined|string => {
 
         const givenOpts: Array<object> = []
         Object.entries(programOpts).forEach(opt => {
+            console.log(opt)
             const givenOpt = {name: opt[0], value: opt[1]}
             if (allowedOptions.map(e => e.name).indexOf(givenOpt.name) !== -1) {
                 givenOpts.push(givenOpt)
@@ -21,6 +22,8 @@ export const validateOptions = (programOpts: any): undefined|string => {
                 errMessage = `${ruleName} error: ${rule.name.replace( /([A-Z])/g, " $1" ).toLowerCase()}`
             }
         })
+
+
     })
     return errMessage
 }

@@ -1,3 +1,4 @@
+import { unixTimestamp } from "../../util/date";
 import log from "../../config/logger";
 
 export default async function elrutificadorByRut(rut: string): Promise<ElRutificadorResponse> {
@@ -16,6 +17,7 @@ type ElRutificadorResponse = {
     gender: "MALE" | "FEMALE";
     birthdate: string;
     age: string;
+    timestamp: number;
 }
 
 function extractDataFromHtml(html: string): ElRutificadorResponse {
@@ -37,6 +39,7 @@ function extractDataFromHtml(html: string): ElRutificadorResponse {
         city: items?.at(7) ?? "",
         birthdate: items?.at(8) ?? "",
         age: items?.at(9) ?? "",
+        timestamp: unixTimestamp(),
     };
 
 }

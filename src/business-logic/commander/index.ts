@@ -18,6 +18,7 @@ export default async function commanderAction(opts: ProgramOptions): Promise<nev
                 source: opts.source,
                 from: opts.fromRut,
                 to: opts.toRut,
+                batchSize: opts.batchSize,
             });
         }
         if (opts.queryType === "multiple-ruts") {
@@ -25,6 +26,7 @@ export default async function commanderAction(opts: ProgramOptions): Promise<nev
                 type: opts.queryType,
                 source: opts.source,
                 ruts: opts.ruts,
+                batchSize: opts.batchSize,
             });
         }
     }

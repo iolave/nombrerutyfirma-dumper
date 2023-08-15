@@ -68,11 +68,13 @@ interface RutsRangeProgramOptions extends ProgramOptionsBase {
     queryType: "ruts-range",
     fromRut: number;
     toRut: number;
+    batchSize?: number;
 }
 
 interface MultipleRutsProgramOptions extends ProgramOptionsBase {
     queryType: "multiple-ruts",
     ruts: number[];
+    batchSize?: number;
 }
 
 export type ProgramOptions = SingleRutProgramOptions | RutsRangeProgramOptions | MultipleRutsProgramOptions;
@@ -133,6 +135,11 @@ rutsOption.conflicts("toRut");
 rutsOption.argParser((value) => numberArrayParser(program, value, rutsOptionFlags));
 rutsOption.implies({ queryType: "multiple-ruts" });
 
+const batchSizeOptionFlags = "--batch-size <number>";
+const batchSizeOption = new Option(batchSizeOptionFlags, "number of simultaneous requests");
+batchSizeOption.makeOptionMandatory(false);
+batchSizeOption.conflicts("rut");
+batchSizeOption.argParser((value) => intParser(program, value, batchSizeOptionFlags));
 
 program.addOption(verboseOption);
 program.addOption(sourceOption);
@@ -142,3 +149,4 @@ program.addOption(rutOption);
 program.addOption(fromRutOption);
 program.addOption(toRutOption);
 program.addOption(rutsOption);
+program.addOption(batchSizeOption);

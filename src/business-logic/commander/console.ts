@@ -14,12 +14,14 @@ export type RutsRangeOptions = {
     source: InformationSource,
     from: number,
     to: number,
+    batchSize?: number;
 }
 
 export type MultipleRutsOptions = {
     type: "multiple-ruts",
     source: InformationSource,
     ruts: number[],
+    batchSize?: number;
 }
 
 export type ConsoleActionOptions = SingleRutOptions | RutsRangeOptions | MultipleRutsOptions;
@@ -52,6 +54,8 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
     }
 
     if (opts.type === "ruts-range") {
+        const promises = [];
+
         for (let i = opts.from;i <= opts.to;i++) {
             const rut = formatRut(`${i}-${calculateDv(i)}`);
 
@@ -60,7 +64,7 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
                 break;
             };
 
-            await elrutificadorByRut(rut)
+            const promise = elrutificadorByRut(rut)
                 .then(JSON.stringify)
                 .then(log.info)
                 .catch((error: Error) => {
@@ -69,12 +73,24 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
                     log.info(`${opts.source}: data not found for rut ${rut}, skipping`);
                 })
             ;
-        }
 
+            if (!opts.batchSize) await promise;
+            else {
+                if (promises.length < opts.batchSize) promises.push(promise);
+                else {
+                    await Promise.all(promises);
+                    promises.splice(0, promises.length);
+                }
+            }
+        }
+        
+        await Promise.all(promises);
         process.exit(0);
     }
 
     if (opts.type === "multiple-ruts") {
+        const promises = [];
+
         for (const rutWithoutDv of opts.ruts) {
             const rut = formatRut(`${rutWithoutDv}-${calculateDv(rutWithoutDv)}`);
 
@@ -83,7 +99,7 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
                 break;
             };
 
-            await elrutificadorByRut(rut)
+            const promise = elrutificadorByRut(rut)
                 .then(JSON.stringify)
                 .then(log.info)
                 .catch((error: Error) => {
@@ -92,8 +108,18 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
                     log.info(`${opts.source}: data not found for rut ${rut}, skipping`);
                 })
             ;
+
+            if (!opts.batchSize) await promise;
+            else {
+                if (promises.length < opts.batchSize) promises.push(promise);
+                else {
+                    await Promise.all(promises);
+                    promises.splice(0, promises.length);
+                }
+            }
         }
 
+        await Promise.all(promises);
         process.exit(0);
     }
 

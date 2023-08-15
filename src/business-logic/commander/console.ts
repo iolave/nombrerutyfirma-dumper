@@ -16,7 +16,13 @@ export type RutsRangeOptions = {
     to: number,
 }
 
-export type ConsoleActionOptions = SingleRutOptions | RutsRangeOptions;
+export type MultipleRutsOptions = {
+    type: "multiple-ruts",
+    source: InformationSource,
+    ruts: number[],
+}
+
+export type ConsoleActionOptions = SingleRutOptions | RutsRangeOptions | MultipleRutsOptions;
 
 export default async function consoleAction(opts: ConsoleActionOptions): Promise<never> {
     if (opts.type === "single-rut") {
@@ -48,6 +54,29 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
     if (opts.type === "ruts-range") {
         for (let i = opts.from;i <= opts.to;i++) {
             const rut = formatRut(`${i}-${calculateDv(i)}`);
+
+            if (!rut) {
+                log.error(`rut ${rut} is not valid, skipping`);
+                break;
+            };
+
+            await elrutificadorByRut(rut)
+                .then(JSON.stringify)
+                .then(log.info)
+                .catch((error: Error) => {
+                    if (!error.message) throw error;
+                    if (error.message !== "elrutificador_error: no table found in html") throw error;
+                    log.info(`${opts.source}: data not found for rut ${rut}, skipping`);
+                })
+            ;
+        }
+
+        process.exit(0);
+    }
+
+    if (opts.type === "multiple-ruts") {
+        for (const rutWithoutDv of opts.ruts) {
+            const rut = formatRut(`${rutWithoutDv}-${calculateDv(rutWithoutDv)}`);
 
             if (!rut) {
                 log.error(`rut ${rut} is not valid, skipping`);

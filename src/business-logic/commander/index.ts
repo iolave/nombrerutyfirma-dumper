@@ -8,16 +8,23 @@ export default async function commanderAction(opts: ProgramOptions): Promise<nev
         if (opts.queryType === "single-rut") {
             await consoleAction({
                 type: opts.queryType,
-                rut: opts.rut,
                 source: opts.source,
+                rut: opts.rut,
             });
         }
         if (opts.queryType === "ruts-range") {
             await consoleAction({
                 type: opts.queryType,
+                source: opts.source,
                 from: opts.fromRut,
                 to: opts.toRut,
+            });
+        }
+        if (opts.queryType === "multiple-ruts") {
+            await consoleAction({
+                type: opts.queryType,
                 source: opts.source,
+                ruts: opts.ruts,
             });
         }
     }
@@ -38,6 +45,14 @@ export default async function commanderAction(opts: ProgramOptions): Promise<nev
                 type: opts.queryType,
                 from: opts.fromRut,
                 to: opts.toRut,
+                source: opts.source,
+                path,
+            });
+        }
+        if (opts.queryType === "multiple-ruts") {
+            await localFileAction({
+                type: opts.queryType,
+                ruts: opts.ruts,
                 source: opts.source,
                 path,
             });

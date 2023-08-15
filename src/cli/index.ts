@@ -1,5 +1,5 @@
 import { Option, program } from "commander";
-import { intParser } from "./parser";
+import { intParser, numberArrayParser } from "./parser";
 import { InformationSource, Destination, destinations, informationSources } from "../business-logic/commander";
 import { setLogLevel } from "../config/logger";
 
@@ -24,12 +24,30 @@ export default function parseProgram(): ProgramOptions {
             program.error(`error: required option '--out-path <path>' not specified`)
         }
     }
-    
-    if (args.queryType === "ruts-range" ) {
-        if (!args.fromRut) program.error(`error: required option '--from-rut <rut without dv>' not specified`);
-        if (!args.toRut) program.error(`error: required option '--to-rut <rut without dv>' not specified`);
+
+    if (args.queryType === "single-rut") {
+        if (!args.rut) program.error(`error: required option '${rutOptionFlags}' not specified`);
     }
-    
+    else if (args.queryType === "ruts-range" ) {
+        if (!args.fromRut) program.error(`error: required option '${fromRutOptionFlags}' not specified`);
+        if (!args.toRut) program.error(`error: required option ${toRutOptionFlags}' not specified`);
+    }
+    else if (args.queryType === "multiple-ruts") {
+        if (!args.ruts) program.error(`error: required option '${rutsOptionFlags}' not specified`);
+    }
+    else {
+        const errorMsg = new String()
+            .concat("error: no input specified\n\n")
+            .concat("specify one of the following options\n")
+            .concat(`  ${rutOptionFlags}\n`)
+            .concat(`  ${fromRutOptionFlags}\n`)
+            .concat(`  ${toRutOptionFlags}\n`)
+            .concat(`  ${rutsOptionFlags}\n`)
+        ;
+
+        program.error(errorMsg);
+    }
+
     return args;
 }
 
@@ -52,7 +70,12 @@ interface RutsRangeProgramOptions extends ProgramOptionsBase {
     toRut: number;
 }
 
-export type ProgramOptions = SingleRutProgramOptions | RutsRangeProgramOptions;
+interface MultipleRutsProgramOptions extends ProgramOptionsBase {
+    queryType: "multiple-ruts",
+    ruts: number[];
+}
+
+export type ProgramOptions = SingleRutProgramOptions | RutsRangeProgramOptions | MultipleRutsProgramOptions;
 
 
 program.name("nryf-dumper");
@@ -82,12 +105,14 @@ rutOption.argParser((value) => intParser(program, value, rutOptionFlags));
 rutOption.makeOptionMandatory(false);
 rutOption.conflicts("fromRut");
 rutOption.conflicts("toRut");
+rutOption.conflicts("ruts");
 rutOption.implies({ queryType: "single-rut" });
 
 const fromRutOptionFlags = "--from-rut <rut without dv>";
 const fromRutOption = new Option(fromRutOptionFlags, "search a bunch of ruts starting from this rut. eg: 1");
 fromRutOption.makeOptionMandatory(false);
 fromRutOption.conflicts("rut");
+fromRutOption.conflicts("ruts");
 fromRutOption.argParser((value) => intParser(program, value, fromRutOptionFlags));
 fromRutOption.implies({ queryType: "ruts-range" });
 
@@ -95,8 +120,18 @@ const toRutOptionFlags = "--to-rut <rut without dv>";
 const toRutOption = new Option(toRutOptionFlags, "search a bunch of ruts ending with this rut. eg: 1000000");
 toRutOption.makeOptionMandatory(false);
 toRutOption.conflicts("rut");
+toRutOption.conflicts("ruts");
 toRutOption.argParser((value) => intParser(program, value, toRutOptionFlags));
 toRutOption.implies({ queryType: "ruts-range" });
+
+const rutsOptionFlags = "--ruts <...ruts without dv>";
+const rutsOption = new Option(rutsOptionFlags, "search a bunch of ruts. eg: 123456,123457,1234568");
+rutsOption.makeOptionMandatory(false);
+rutsOption.conflicts("rut");
+rutsOption.conflicts("fromRut");
+rutsOption.conflicts("toRut");
+rutsOption.argParser((value) => numberArrayParser(program, value, rutsOptionFlags));
+rutsOption.implies({ queryType: "multiple-ruts" });
 
 
 program.addOption(verboseOption);
@@ -106,3 +141,4 @@ program.addOption(outPathOption);
 program.addOption(rutOption);
 program.addOption(fromRutOption);
 program.addOption(toRutOption);
+program.addOption(rutsOption);

@@ -21,7 +21,14 @@ export type RutsRangeOptions = {
     path: string;
 }
 
-export type LocalFileActionOptions = SingleRutOptions | RutsRangeOptions;
+export type MultipleRutsOptions = {
+    type: "multiple-ruts",
+    source: InformationSource,
+    ruts: number[],
+    path: string;
+}
+
+export type LocalFileActionOptions = SingleRutOptions | RutsRangeOptions | MultipleRutsOptions;
 
 export default async function localFileAction(opts: LocalFileActionOptions): Promise<never> {
     if (opts.type === "single-rut") {
@@ -66,6 +73,45 @@ export default async function localFileAction(opts: LocalFileActionOptions): Pro
         if (opts.source === "elrutificador") {
             for (var i = opts.from;i <= opts.to;i++) {
                 const rut = formatRut(`${i}-${calculateDv(i)}`);
+
+                if (!rut) {
+                    log.error(`${opts.source}: given rut ${rut} is not a valid`);
+                    process.exit(1);
+                }
+
+                await elrutificadorByRut(rut)
+                    .then(JSON.stringify)
+                    .then(res => res.concat(EOL))
+                    .then(Buffer.from)
+                    .then((buf) => { writeStream.write(buf) })
+                    .then(() => log.info(`${opts.source}: wrote found data for rut ${rut} to ${filePath}`))
+                    .catch((error: Error) => {
+                        if (!error.message) {
+                            writeStream.close();
+                            throw error;
+                        }
+                        if (error.message !== "elrutificador_error: no table found in html") {
+                            writeStream.close();
+                            throw error;
+                        }
+                        log.info(`${opts.source}: data not found for rut ${rut}, skipping`);
+                    })
+                ;
+
+            }
+            writeStream.close();
+            process.exit(0);
+        }
+        process.exit(1);
+    }
+
+    if (opts.type === "multiple-ruts") {
+        const filePath = path.resolve(opts.path);
+        const writeStream = fs.createWriteStream(filePath);
+
+        if (opts.source === "elrutificador") {
+            for (const rutWithoutDv of opts.ruts) {
+                const rut = formatRut(`${rutWithoutDv}-${calculateDv(rutWithoutDv)}`);
 
                 if (!rut) {
                     log.error(`${opts.source}: given rut ${rut} is not a valid`);

@@ -19,8 +19,13 @@ type ElRutificadorResponse = {
     city: string;
     gender: "MALE" | "FEMALE";
     birthdate: string;
-    age: string;
     timestamp: number;
+}
+
+function formatBirthdate(str: string): string {
+    if (str === "") return str;
+    if (!str.match(/^[0-9]{2}\/[0-9]{2}\/[0-9]{4}/)) return str;
+    return `${str.slice(6, 10)}-${str.slice(3, 5)}-${str.slice(0, 2)}`;
 }
 
 function extractDataFromHtml(html: string): ElRutificadorResponse {
@@ -40,11 +45,9 @@ function extractDataFromHtml(html: string): ElRutificadorResponse {
         address: items?.at(5) ?? "",
         gender: items?.at(6)?.toUpperCase() === "MASCULINO" ? "MALE": "FEMALE",
         city: items?.at(7) ?? "",
-        birthdate: items?.at(8) ?? "",
-        age: items?.at(9) ?? "",
+        birthdate: formatBirthdate(items?.at(8) ?? ""),
         timestamp: unixTimestamp(),
     };
-
 }
 
 async function retrieveHtml(token: string): Promise<string> {

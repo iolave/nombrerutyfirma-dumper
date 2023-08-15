@@ -3,16 +3,11 @@ import commanderAction, { Destination, InformationSource, destinations, informat
 import { isNumber } from "./util/string";
 import { setLogLevel } from "./config/logger";
 
-const verboseOptionFlags = "-v --verbose [level]";
-const verboseOption = new Option(verboseOptionFlags, "verbose level specified by RFC5424");
-verboseOption.makeOptionMandatory(false);
-verboseOption.argParser((value: string | undefined) => {
-    if (!value) return setLogLevel(6); // 6 means refers to info within winston logger
-    if (isNumber(value)) {
-        const level = parseInt(value);
-        return setLogLevel(level);
-    }
-    program.error(`${rutOptionFlags} value should be a number`);
+const verboseOptionFlags = "--verbose [level]";
+const verboseOption = new Option(verboseOptionFlags, "verbose level, see RFC5424");
+verboseOption.argParser<number>((value: string) => {
+    if (!isNumber(value)) program.error(`${verboseOptionFlags} value should be a number`);
+    return parseInt(value);
 });
 
 const sourceOption = new Option("--source <source>", "information source");
@@ -61,6 +56,7 @@ type ProgramOptions = {
     outPath?: string;
     fromRut?: string;
     toRut?: string;
+    verbose?: boolean | number;
 }
 
 program.name("nryf-dumper");
@@ -74,40 +70,45 @@ program.addOption(rutOption);
 program.addOption(fromRutOption);
 program.addOption(toRutOption);
 
-program.action(async (args: ProgramOptions) => {
-    if (args.output === "console") {
-        if (args.outPath) {
-            program.error(`error: option '--out-path <path>' can not be used with '--output ${args.output}'`)
-        }
-    }
-
-    if (args.output === "local-file") {
-        if (!args.outPath) {
-            program.error(`error: required option '--out-path <path>' not specified`)
-        }
-    }
-
-    if (!args.rut) {
-        if (!args.fromRut) {
-            program.error(`error: required option '--from-rut <rut without dv>' not specified`)
-        }
-        if (!args.toRut) {
-            program.error(`error: required option '--to-rut <rut without dv>' not specified`)
-        }
-    }
-
-    const rut = args.rut ?? {
-        from: parseInt(args.fromRut??""),
-        to: parseInt(args.toRut??"")
-    }
-    
-    await commanderAction({
-        destination: args.output,
-        source: args.source,
-        outFile: true,
-        outPath: args.outPath,
-        rut,
-    });
-})
-
 program.parse();
+
+const args = program.opts<ProgramOptions>();
+
+/* LOGGER LEVER */
+if (!args.verbose) setLogLevel(6); // 6 refers to info
+else if (typeof args.verbose === "boolean") args.verbose ? setLogLevel(7):setLogLevel(6); // 7 refers to debug
+else setLogLevel(args.verbose); // 7 refers to debug
+
+if (args.output === "console") {
+    if (args.outPath) {
+        program.error(`error: option '--out-path <path>' can not be used with '--output ${args.output}'`)
+    }
+}
+
+if (args.output === "local-file") {
+    if (!args.outPath) {
+        program.error(`error: required option '--out-path <path>' not specified`)
+    }
+}
+
+if (!args.rut) {
+    if (!args.fromRut) {
+        program.error(`error: required option '--from-rut <rut without dv>' not specified`)
+    }
+    if (!args.toRut) {
+        program.error(`error: required option '--to-rut <rut without dv>' not specified`)
+    }
+}
+
+const rut = args.rut ?? {
+    from: parseInt(args.fromRut??""),
+    to: parseInt(args.toRut??"")
+}
+    
+commanderAction({
+    destination: args.output,
+    source: args.source,
+    outFile: true,
+    outPath: args.outPath,
+    rut,
+});

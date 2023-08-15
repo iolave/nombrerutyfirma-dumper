@@ -1,6 +1,19 @@
 import { Option, program } from "commander";
 import commanderAction, { Destination, InformationSource, destinations, informationSources } from "./business-logic/commander";
 import { isNumber } from "./util/string";
+import { setLogLevel } from "./config/logger";
+
+const verboseOptionFlags = "-v --verbose [level]";
+const verboseOption = new Option(verboseOptionFlags, "verbose level specified by RFC5424");
+verboseOption.makeOptionMandatory(false);
+verboseOption.argParser((value: string | undefined) => {
+    if (!value) return setLogLevel(6); // 6 means refers to info within winston logger
+    if (isNumber(value)) {
+        const level = parseInt(value);
+        return setLogLevel(level);
+    }
+    program.error(`${rutOptionFlags} value should be a number`);
+});
 
 const sourceOption = new Option("--source <source>", "information source");
 sourceOption.choices(informationSources);
@@ -53,6 +66,7 @@ type ProgramOptions = {
 program.name("nryf-dumper");
 program.showHelpAfterError();
 
+program.addOption(verboseOption);
 program.addOption(sourceOption);
 program.addOption(outputOption);
 program.addOption(outPathOption);
@@ -87,7 +101,7 @@ program.action(async (args: ProgramOptions) => {
         to: parseInt(args.toRut??"")
     }
     
-    commanderAction({
+    await commanderAction({
         destination: args.output,
         source: args.source,
         outFile: true,

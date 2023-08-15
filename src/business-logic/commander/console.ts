@@ -20,6 +20,7 @@ export default async function consoleAction(opts: Options): Promise<never> {
                     if (!error.message) throw error;
                     if (error.message !== "elrutificador_error: no table found in html") throw error;
                     log.info(`${opts.source}: data not found for rut ${rut}`);
+                    process.exit(1);
                 })
             ;
             process.exit(0);

@@ -49,6 +49,7 @@ export default async function commanderAction(opts: ProgramOptions): Promise<nev
                 to: opts.toRut,
                 source: opts.source,
                 path,
+                batchSize: opts.batchSize,
             });
         }
         if (opts.queryType === "multiple-ruts") {
@@ -57,6 +58,7 @@ export default async function commanderAction(opts: ProgramOptions): Promise<nev
                 ruts: opts.ruts,
                 source: opts.source,
                 path,
+                batchSize: opts.batchSize,
             });
         }
     }

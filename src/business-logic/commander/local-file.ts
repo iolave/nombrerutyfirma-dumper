@@ -19,6 +19,7 @@ export type RutsRangeOptions = {
     from: number,
     to: number,
     path: string;
+    batchSize?: number;
 }
 
 export type MultipleRutsOptions = {
@@ -26,6 +27,7 @@ export type MultipleRutsOptions = {
     source: InformationSource,
     ruts: number[],
     path: string;
+    batchSize?: number;
 }
 
 export type LocalFileActionOptions = SingleRutOptions | RutsRangeOptions | MultipleRutsOptions;
@@ -67,6 +69,7 @@ export default async function localFileAction(opts: LocalFileActionOptions): Pro
     }
 
     if (opts.type === "ruts-range") {
+        const promises = [];
         const filePath = path.resolve(opts.path);
         const writeStream = fs.createWriteStream(filePath);
 
@@ -79,7 +82,7 @@ export default async function localFileAction(opts: LocalFileActionOptions): Pro
                     process.exit(1);
                 }
 
-                await elrutificadorByRut(rut)
+                const promise = elrutificadorByRut(rut)
                     .then(JSON.stringify)
                     .then(res => res.concat(EOL))
                     .then(Buffer.from)
@@ -97,8 +100,17 @@ export default async function localFileAction(opts: LocalFileActionOptions): Pro
                         log.info(`${opts.source}: data not found for rut ${rut}, skipping`);
                     })
                 ;
+                if (!opts.batchSize) await promise;
+                else {
+                    if (promises.length < opts.batchSize) promises.push(promise);
+                    else {
+                        await Promise.all(promises);
+                        promises.splice(0, promises.length);
+                    }
+                }
 
             }
+            await Promise.all(promises);
             writeStream.close();
             process.exit(0);
         }
@@ -106,6 +118,7 @@ export default async function localFileAction(opts: LocalFileActionOptions): Pro
     }
 
     if (opts.type === "multiple-ruts") {
+        const promises = [];
         const filePath = path.resolve(opts.path);
         const writeStream = fs.createWriteStream(filePath);
 
@@ -118,7 +131,7 @@ export default async function localFileAction(opts: LocalFileActionOptions): Pro
                     process.exit(1);
                 }
 
-                await elrutificadorByRut(rut)
+                const promise = elrutificadorByRut(rut)
                     .then(JSON.stringify)
                     .then(res => res.concat(EOL))
                     .then(Buffer.from)
@@ -137,7 +150,17 @@ export default async function localFileAction(opts: LocalFileActionOptions): Pro
                     })
                 ;
 
+                if (!opts.batchSize) await promise;
+                else {
+                    if (promises.length < opts.batchSize) promises.push(promise);
+                    else {
+                        await Promise.all(promises);
+                        promises.splice(0, promises.length);
+                    }
+                }
             }
+            
+            await Promise.all(promises);
             writeStream.close();
             process.exit(0);
         }

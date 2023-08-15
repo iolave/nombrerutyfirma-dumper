@@ -1,16 +1,33 @@
 import path from "path";
 import fs from "fs";
 import { EOL } from "os";
-import { Options } from ".";
+import { InformationSource } from ".";
 import { calculateDv, formatRut } from "../../util/rut";
 import log from "../../config/logger";
 import elrutificadorByRut from "../../information-sources/elrutificador/search-by-rut";
 
-export default async function localFileAction(opts: Options): Promise<never> {
-    const outFilePath = path.resolve(opts.outPath ?? "");
-    const writeStream = fs.createWriteStream(outFilePath);
+export type SingleRutOptions = {
+    type: "single-rut",
+    source: InformationSource,
+    rut: number,
+    path: string;
+}
 
-    if (typeof opts.rut === "number") {
+export type RutsRangeOptions = {
+    type: "ruts-range",
+    source: InformationSource,
+    from: number,
+    to: number,
+    path: string;
+}
+
+export type LocalFileActionOptions = SingleRutOptions | RutsRangeOptions;
+
+export default async function localFileAction(opts: LocalFileActionOptions): Promise<never> {
+    if (opts.type === "single-rut") {
+        const filePath = path.resolve(opts.path);
+        const writeStream = fs.createWriteStream(filePath);
+        
         const rut = formatRut(`${opts.rut}-${calculateDv(opts.rut)}`);
 
         if (!rut) {
@@ -24,7 +41,7 @@ export default async function localFileAction(opts: Options): Promise<never> {
                 .then(res => res.concat(EOL))
                 .then(Buffer.from)
                 .then((buf) => { writeStream.write(buf) })
-                .then(() => log.info(`${opts.source}: wrote found data for rut ${opts.rut} to ${opts.outPath}`))
+                .then(() => log.info(`${opts.source}: wrote found data for rut ${rut} to ${filePath}`))
                 .then(() => writeStream.close())
                 .catch((error: Error) => {
                     writeStream.close();
@@ -38,10 +55,16 @@ export default async function localFileAction(opts: Options): Promise<never> {
             process.exit(0);
         }
 
+        log.error(`${opts.source}: source information handler not found`);
         process.exit(1);
-    } else {
+    }
+
+    if (opts.type === "ruts-range") {
+        const filePath = path.resolve(opts.path);
+        const writeStream = fs.createWriteStream(filePath);
+
         if (opts.source === "elrutificador") {
-            for (var i = opts.rut.from;i <= opts.rut.to;i++) {
+            for (var i = opts.from;i <= opts.to;i++) {
                 const rut = formatRut(`${i}-${calculateDv(i)}`);
 
                 if (!rut) {
@@ -54,7 +77,7 @@ export default async function localFileAction(opts: Options): Promise<never> {
                     .then(res => res.concat(EOL))
                     .then(Buffer.from)
                     .then((buf) => { writeStream.write(buf) })
-                    .then(() => log.info(`${opts.source}: wrote found data for rut ${rut} to ${opts.outPath}`))
+                    .then(() => log.info(`${opts.source}: wrote found data for rut ${rut} to ${filePath}`))
                     .catch((error: Error) => {
                         if (!error.message) {
                             writeStream.close();
@@ -74,4 +97,5 @@ export default async function localFileAction(opts: Options): Promise<never> {
         }
         process.exit(1);
     }
+    process.exit(1);
 }

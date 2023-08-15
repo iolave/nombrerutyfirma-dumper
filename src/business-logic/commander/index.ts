@@ -1,40 +1,43 @@
 import { tmpdir } from "os";
 import consoleAction from "./console";
 import localFileAction from "./local-file";
+import { ProgramOptions } from "../../cli";
 
-export default async function commanderAction(opts: Options): Promise<never> {
-    if (opts.destination === "console") {
-        if (typeof opts.rut === "number") {
+export default async function commanderAction(opts: ProgramOptions): Promise<never> {
+    if (opts.output === "console") {
+        if (opts.queryType === "single-rut") {
             await consoleAction({
-                type: "single-rut",
+                type: opts.queryType,
                 rut: opts.rut,
                 source: opts.source,
             });
-        } else {
+        }
+        if (opts.queryType === "ruts-range") {
             await consoleAction({
-                type: "ruts-range",
-                from: opts.rut.from,
-                to: opts.rut.to,
+                type: opts.queryType,
+                from: opts.fromRut,
+                to: opts.toRut,
                 source: opts.source,
             });
         }
     }
 
-    if (opts.destination === "local-file") {
+    if (opts.output === "local-file") {
         const path = opts.outPath ?? tmpdir();
-
-        if (typeof opts.rut === "number") {
+        
+        if (opts.queryType === "single-rut") {
             await localFileAction({
-                type: "single-rut",
+                type: opts.queryType,
                 rut: opts.rut,
                 source: opts.source,
                 path,
             });
-        } else {
+        }
+        if (opts.queryType === "ruts-range") {
             await localFileAction({
-                type: "ruts-range",
-                from: opts.rut.from,
-                to: opts.rut.to,
+                type: opts.queryType,
+                from: opts.fromRut,
+                to: opts.toRut,
                 source: opts.source,
                 path,
             });
@@ -42,15 +45,6 @@ export default async function commanderAction(opts: Options): Promise<never> {
     }
     process.exit(1);
 }
-
-export type Options = {
-    source: InformationSource;
-    outFile: boolean;
-    outPath?: string;
-    rut: number | { from: number, to: number };
-    destination: Destination;
-}
-
 
 export const informationSources = ["elrutificador"] as const;
 export type InformationSource = typeof informationSources[number];

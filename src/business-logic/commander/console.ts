@@ -1,17 +1,32 @@
-import { Options } from ".";
+import { InformationSource } from ".";
 import { calculateDv, formatRut } from "../../util/rut";
 import log from "../../config/logger";
 import elrutificadorByRut from "../../information-sources/elrutificador/search-by-rut";
 
-export default async function consoleAction(opts: Options): Promise<never> {
-    if (typeof opts.rut === "number") {
+export type SingleRutOptions = {
+    type: "single-rut",
+    source: InformationSource,
+    rut: number,
+}
+
+export type RutsRangeOptions = {
+    type: "ruts-range",
+    source: InformationSource,
+    from: number,
+    to: number,
+}
+
+export type ConsoleActionOptions = SingleRutOptions | RutsRangeOptions;
+
+export default async function consoleAction(opts: ConsoleActionOptions): Promise<never> {
+    if (opts.type === "single-rut") {
         const rut = formatRut(`${opts.rut}-${calculateDv(opts.rut)}`);
 
         if (!rut) {
             log.error(`${opts.source}: given rut ${rut} is not a valid`);
             process.exit(1);
         }
-        
+
         if (opts.source === "elrutificador") {
             await elrutificadorByRut(rut)
                 .then(JSON.stringify)
@@ -26,11 +41,12 @@ export default async function consoleAction(opts: Options): Promise<never> {
             process.exit(0);
         }
 
+        log.error(`${opts.source}: source information handler not found`);
         process.exit(1);
     }
-    // when rut.from and rut.to properties are available
-    else {        
-        for (let i = opts.rut.from;i <= opts.rut.to;i++) {
+
+    if (opts.type === "ruts-range") {
+        for (let i = opts.from;i <= opts.to;i++) {
             const rut = formatRut(`${i}-${calculateDv(i)}`);
 
             if (!rut) {
@@ -51,4 +67,6 @@ export default async function consoleAction(opts: Options): Promise<never> {
 
         process.exit(0);
     }
+
+    process.exit(1);
 }

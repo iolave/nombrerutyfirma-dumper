@@ -2,7 +2,22 @@ import consoleAction from "./console";
 import localFileAction from "./local-file";
 
 export default async function commanderAction(opts: Options): Promise<never> {
-    if (opts.destination === "console") await consoleAction(opts);
+    if (opts.destination === "console") {
+        if (typeof opts.rut === "number") {
+            await consoleAction({
+                type: "single-rut",
+                rut: opts.rut,
+                source: opts.source,
+            });
+        } else {
+            await consoleAction({
+                type: "ruts-range",
+                from: opts.rut.from,
+                to: opts.rut.to,
+                source: opts.source,
+            });
+        }
+    }
     if (opts.destination === "local-file") await localFileAction(opts);
     process.exit(1);
 }

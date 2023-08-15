@@ -20,6 +20,7 @@ type ElRutificadorResponse = {
     gender: "MALE" | "FEMALE";
     birthdate: string;
     timestamp: number;
+    source: "elrutificador.com";
 }
 
 function formatBirthdate(str: string): string {
@@ -47,6 +48,7 @@ function extractDataFromHtml(html: string): ElRutificadorResponse {
         city: items?.at(7) ?? "",
         birthdate: formatBirthdate(items?.at(8) ?? ""),
         timestamp: unixTimestamp(),
+        source: "elrutificador.com",
     };
 }
 

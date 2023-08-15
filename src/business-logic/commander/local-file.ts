@@ -4,7 +4,7 @@ import { EOL } from "os";
 import { Options } from ".";
 import { calculateDv, formatRut } from "../../util/rut";
 import log from "../../config/logger";
-import elrutificadorByRut from "../../business-logic/elrutificador/search-by-rut";
+import elrutificadorByRut from "../../information-sources/elrutificador/search-by-rut";
 
 export default async function localFileAction(opts: Options): Promise<never> {
     const outFilePath = path.resolve(opts.outPath ?? "");

@@ -1,7 +1,7 @@
 import { Options } from ".";
 import { calculateDv, formatRut } from "../../util/rut";
 import log from "../../config/logger";
-import elrutificadorByRut from "../../business-logic/elrutificador/search-by-rut";
+import elrutificadorByRut from "../../information-sources/elrutificador/search-by-rut";
 
 export default async function consoleAction(opts: Options): Promise<never> {
     if (typeof opts.rut === "number") {

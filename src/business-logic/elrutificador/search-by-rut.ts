@@ -2,10 +2,13 @@ import { unixTimestamp } from "../../util/date";
 import log from "../../config/logger";
 
 export default async function elrutificadorByRut(rut: string): Promise<ElRutificadorResponse> {
-    log.info(`elrutificador: querying person by rut ${rut}`)
+    log.debug(`elrutificador: querying person by rut ${rut}`)
     const token = await retrieveToken(rut);
+    log.debug(`elrutificador: retrieved token for rut ${rut}`);
     const html = await retrieveHtml(token);
+    log.debug(`elrutificador: retrieved html for ${rut}`);
     const data = extractDataFromHtml(html);
+    log.debug(`elrutificador: scrapped html for ${rut}`);
     return data;
 }
 
@@ -78,7 +81,6 @@ async function retrieveHtml(token: string): Promise<string> {
 }
 
 async function retrieveToken(rut: string): Promise<string> {
-    log.debug(`elrutificador: retrieving internal token for ${rut}`)
     const url = new URL("https://elrutificador.com");
     url.pathname = "/ctk/t";
 
@@ -105,10 +107,8 @@ async function retrieveToken(rut: string): Promise<string> {
         })
     }
 
-    log.debug(`elrutificador: retrieving internal token for rut ${rut} via ${url.toString()} `)
     const res = await fetch(url, requestInit).then(res => res.text());
-    
     if (!res.match(/^[a-zA-Z0-9]+$/)) throw new Error(res);
-    
+
     return res;
 }

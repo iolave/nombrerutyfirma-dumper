@@ -2,6 +2,7 @@ import { Option, program } from "commander";
 import { intParser, numberArrayParser } from "./parser";
 import { InformationSource, Destination, destinations, informationSources } from "../business-logic/commander";
 import { setLogLevel } from "../config/logger";
+import packageJson from "../../package.json"
 
 export default function parseProgram(): ProgramOptions {
     program.parse();
@@ -79,9 +80,9 @@ interface MultipleRutsProgramOptions extends ProgramOptionsBase {
 
 export type ProgramOptions = SingleRutProgramOptions | RutsRangeProgramOptions | MultipleRutsProgramOptions;
 
-
 program.name("nryf-dumper");
 program.showHelpAfterError();
+program.version(packageJson.version);
 
 const verboseOptionFlags = "--verbose [level]";
 const verboseOption = new Option(verboseOptionFlags, "verbose level, see RFC5424");

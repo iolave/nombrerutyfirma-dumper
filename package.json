@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "bin": {
-    "nombrerutyfirma-dumper": "./dist/index.js"
+    "nryf-dumper": "./dist/src/index.js"
   },
   "scripts": {
     "build": "tsc"
@@ -13,12 +13,13 @@
     "url": "git+https://github.com/iolave/nombrerutyfirma-dumper.git"
   },
   "author": "Ignacio Olave",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/iolave/nombrerutyfirma-dumper/issues"
   },
   "homepage": "https://github.com/iolave/nombrerutyfirma-dumper#readme",
   "devDependencies": {
+    "@changesets/cli": "^2.26.2",
     "@types/expect": "^24.3.0",
     "ts-node": "^10.9.1",
     "typescript": "^4.9.5"

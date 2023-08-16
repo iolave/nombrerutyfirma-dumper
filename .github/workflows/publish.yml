@@ -24,6 +24,7 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm install --package-lock-only
+    - run: tsc --showConfig
     - run: npm run build
     - run: npm prune --production
     - name: Upload artifact

@@ -25,10 +25,10 @@ jobs:
         [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
         source ~/.bashrc
         nvm install 20.5.0
-    - run: npm install --package-lock-only
-    - run: tsc -v
-    - run: npm run build
-    - run: npm prune --production
+        npm install --package-lock-only
+        node --version && tsc -v
+        npm run build
+        npm prune --production
     - name: Upload artifact
       uses: actions/upload-artifact@v3.1.2
       with:

@@ -1,0 +1,29 @@
+on:
+  workflow_call:
+    inputs:
+      artifact-name:
+        required: true
+        type: string
+    
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: '.nvmrc'
+    - run: npm ci
+    - run: npm run build
+    - run: npm prune --production
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: |
+          ./dist
+          ./package.json
+          ./package-lock.json
+          ./node_modules

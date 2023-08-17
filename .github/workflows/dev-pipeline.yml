@@ -16,7 +16,7 @@ jobs:
     needs: test
     uses: ./.github/workflows/build-artifacts.yml
     with:
-      artifact-name: ${{ inputs.artifact-name }}
+      artifact-name: $GITHUB_SHA
   # publish:
   #   runs-on: ubuntu-latest
   #   needs: build

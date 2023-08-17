@@ -25,6 +25,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           filename: test-${{ inputs.branch }}
-          label: ${{ (needs.main.result == 'success' && 'passing' ) || 'failing' }}
+          label: test
+          message: ${{ (needs.main.result == 'success' && 'passing' ) || 'failing' }}
           labelColor: ${{ (needs.main.result == 'success' && 'success' ) || 'critical' }}
-          message: test
+          color: "darkgrey"
+          namedLogo: "github"

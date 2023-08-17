@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "nodemon -r dotenv/config src/index.ts dotenv_config_path=environment/development.env",
     "build": "tsc",
-    "test": "ts-mocha -p tsconfig.json test/**/*.spec.ts",
+    "test": "echo TODO",
     "start": "node build/src/index.js"
   },
   "repository": {

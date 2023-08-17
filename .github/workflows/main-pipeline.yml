@@ -5,11 +5,11 @@ name: Main
 
 on:
   push:
-    branches: [ "dev" ]
+    branches: [ "main" ]
 
 jobs:
-  # check-changelog:
-  #   uses: ./.github/workflows/check-changelog.yml
+  check-changelog:
+    uses: ./.github/workflows/check-changelog.yml
   test:
     uses: ./.github/workflows/test.yml
     with:
@@ -26,23 +26,11 @@ jobs:
       artifact-name: ${{ github.sha }}
       branch: main
   create-release:
-    # needs: [check-changelog, build, build-artifacts]
-    needs: [build, build-artifacts]
+    needs: [ check-changelog, build, build-artifacts ]
     uses: ./.github/workflows/create-release.yml
   publish-npm:
     needs: [ create-release ]
-    runs-on: ubuntu-latest
-    steps:
-      - name: Download built artifact
-        uses: actions/download-artifact@v3
-        with:
-          name: ${{ github.sha }}
-          # name: edb0e42fcdead87b950684e463919a6fab4a9123
-      - name: Setup node
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          registry-url: https://registry.npmjs.org/
-      - run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+    uses: ./.github/workflows/publish.yml
+    with:
+      artifact-name: ${{ github.sha }}
+      branch: main

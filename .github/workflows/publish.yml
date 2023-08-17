@@ -1,0 +1,38 @@
+on:
+  workflow_call:
+    inputs:
+      artifact-name:
+        required: true
+        type: string
+      branch:
+        required: true
+        type: string
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download built artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: ${{ inputs.artifact-name }}
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org/
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  build-badge:
+    needs: main
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: peterrhodesdev/build-a-badge@v1.3.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          filename: publish-${{ inputs.branch }}
+          label: Publish
+          message: ${{ (needs.main.result == 'success' && 'passing' ) || 'failing' }}
+          color: ${{ (needs.main.result == 'success' && 'success' ) || 'critical' }}
+        

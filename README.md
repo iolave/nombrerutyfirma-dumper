@@ -1,6 +1,6 @@
 # NRYF Dumper - CLI tool to web scrap chileans personal information
 
-![][BADGE-TEST-MAIN] ![][BADGE-BUILD-MAIN] ![][BADGE-BUILD-ART-MAIN]
+![][BADGE-TEST-MAIN] ![][BADGE-BUILD-MAIN] ![][BADGE-BUILD-ART-MAIN] ![][BADGE-PUBLISH-MAIN]
 
 ## Disclaimer
 NRYF Dumper is not affiliated by any means to the following information sources and it's creators: "elrutificador.com". The purpose of the code within this repository is only to query the already mentioned information sources without the need of a browser.
@@ -8,8 +8,10 @@ NRYF Dumper is not affiliated by any means to the following information sources 
 The author have no responsibility at all by the derived from the usage of this respository's code.
 
 ## Install
-- TODO: Allow to install via npm
-- TODO: Build binaries
+### Via npm
+```
+npm install -g nombrerutyfirma-dumper
+```
 ### Using source code
 ```
 git clone https://github.com/iolave/nombrerutyfirma-dumper.git
@@ -61,3 +63,4 @@ nryf-dumper --source=elrutificador --ruts=123456,1234567 --output=local-file  --
 [BADGE-TEST-MAIN]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/wiki/iolave/nombrerutyfirma-dumper/test-main.md&logo=github
 [BADGE-BUILD-MAIN]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/wiki/iolave/nombrerutyfirma-dumper/build-main.md&logo=github
 [BADGE-BUILD-ART-MAIN]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/wiki/iolave/nombrerutyfirma-dumper/build-artifacts-main.md&logo=github
+[BADGE-PUBLISH-MAIN]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/wiki/iolave/nombrerutyfirma-dumper/publish-main.md&logo=github

@@ -16,25 +16,37 @@ jobs:
         node-version-file: '.nvmrc'
     - run: npm ci
     - run: npm run test
-  build-badge-success:
+  build-badge:
     needs: main
-    if: ${{ needs.build.result == 'success' }}
+    if: always()
     runs-on: ubuntu-latest
     steps:
+      - run: echo "${{ github.event.workflow_run.jobs.main.result }}"
       - uses: peterrhodesdev/build-a-badge@v1.3.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           filename: test-${{ inputs.branch }}
           label: success
           message: test
-  build-badge-failure:
-    needs: main
-    if: ${{ needs.build.result != 'success' }}
-    runs-on: ubuntu-latest
-    steps:
-      - uses: peterrhodesdev/build-a-badge@v1.3.1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          filename: test-${{ inputs.branch }}
-          label: failure
-          message: test
+  # build-badge-success:
+  #   needs: main
+  #   if: ${{ needs.build.result == 'success' }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: peterrhodesdev/build-a-badge@v1.3.1
+  #       with:
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         filename: test-${{ inputs.branch }}
+  #         label: success
+  #         message: test
+  # build-badge-failure:
+  #   needs: main
+  #   if: ${{ needs.build.result != 'success' }}
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: peterrhodesdev/build-a-badge@v1.3.1
+  #       with:
+  #         token: ${{ secrets.GITHUB_TOKEN }}
+  #         filename: test-${{ inputs.branch }}
+  #         label: failure
+  #         message: test

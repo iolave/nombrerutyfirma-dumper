@@ -21,12 +21,12 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - run: echo "${{ needs.build.result }}"
+      - run: echo "${{ (needs.main.result == 'success' && 'passing' ) || 'failing' }}"
       - uses: peterrhodesdev/build-a-badge@v1.3.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           filename: test-${{ inputs.branch }}
-          label: ${{ needs.main.result }}
+          label: ${{ (needs.main.result == 'success' && 'passing' ) || 'failing' }}
           message: test
   # build-badge-success:
   #   needs: main

@@ -1,6 +1,6 @@
 # NRYF Dumper - CLI tool to web scrap chileans personal information
 
-![][BADGE-TEST-MAIN]
+![][BADGE-TEST-MAIN] ![][BADGE-BUILD-MAIN]
 
 ## Disclaimer
 NRYF Dumper is not affiliated by any means to the following information sources and it's creators: "elrutificador.com". The purpose of the code within this repository is only to query the already mentioned information sources without the need of a browser.

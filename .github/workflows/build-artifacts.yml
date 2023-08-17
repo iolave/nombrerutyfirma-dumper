@@ -1,6 +1,9 @@
 on:
   workflow_call:
     inputs:
+      artifact-name:
+        required: true
+        type: string
       branch:
         required: true
         type: string
@@ -16,6 +19,18 @@ jobs:
         node-version-file: '.nvmrc'
     - run: npm ci
     - run: npm run build
+    - run: npm prune --production
+    - name: Upload artifact
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: ${{ inputs.artifact-name }}
+        path: |
+          ./dist
+          ./package.json
+          ./package-lock.json
+          ./node_modules
+          ./README.md
+          ./CHANGELOG.md
   build-badge:
     needs: main
     if: always()
@@ -24,8 +39,8 @@ jobs:
       - uses: peterrhodesdev/build-a-badge@v1.3.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          filename: build-${{ inputs.branch }}
-          label: Build
+          filename: build-artifacts-${{ inputs.branch }}
+          label: Build Artifacts
           message: ${{ (needs.main.result == 'success' && 'passing' ) || 'failing' }}
           color: ${{ (needs.main.result == 'success' && 'success' ) || 'critical' }}
         

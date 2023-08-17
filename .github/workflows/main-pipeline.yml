@@ -8,12 +8,12 @@ on:
     branches: [ "main" ]
 
 jobs:
-  check-changelog:
-    uses: ./.github/workflows/check-changelog.yml
   test:
     uses: ./.github/workflows/test.yml
     with:
       branch: main
+  check-changelog:
+    uses: ./.github/workflows/check-changelog.yml
   build:
     needs: test
     uses: ./.github/workflows/build.yml

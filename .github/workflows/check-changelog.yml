@@ -12,6 +12,5 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version-file: '.nvmrc'
-    - run: npm i -g @changesets/cli@2.26.2
-    - run: changeset status
- 
+    - run: npm i -g check-changelog@0.0.2
+    - run: check-changelog

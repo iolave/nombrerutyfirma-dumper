@@ -10,8 +10,8 @@ on:
     branches: [ "dev" ]
 
 jobs:
-  check-changeset:
-    uses: ./.github/workflows/check-changeset.yml
+  check-changelog:
+    uses: ./.github/workflows/check-changelog.yml
   test:
     uses: ./.github/workflows/test.yml
     with:

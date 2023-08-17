@@ -6,7 +6,8 @@
     "nryf-dumper": "./dist/src/index.js"
   },
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json",
+    "test": "echo TODO"
   },
   "repository": {
     "type": "git",

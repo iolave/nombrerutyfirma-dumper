@@ -5,9 +5,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
     - name: Setup node
       uses: actions/setup-node@v3
       with:
         node-version-file: '.nvmrc'
     - run: npm ci
-    - run: echo "TODO: npm run test"
+    - run: npm run test

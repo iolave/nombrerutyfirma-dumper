@@ -35,8 +35,8 @@ jobs:
       - name: Download built artifact
         uses: actions/download-artifact@v3
         with:
-          # name: ${{ github.sha }}
-          name: edb0e42fcdead87b950684e463919a6fab4a9123
+          name: ${{ github.sha }}
+          # name: edb0e42fcdead87b950684e463919a6fab4a9123
       - name: Setup node
         uses: actions/setup-node@v3
         with:

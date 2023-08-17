@@ -5,26 +5,44 @@ name: Main
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "dev" ]
 
 jobs:
-  check-changelog:
-    uses: ./.github/workflows/check-changelog.yml
-  test:
-    uses: ./.github/workflows/test.yml
-    with:
-      branch: main
-  build:
-    needs: test
-    uses: ./.github/workflows/build.yml
-    with:
-      branch: main
-  build-artifacts:
-    needs: build
-    uses: ./.github/workflows/build-artifacts.yml
-    with:
-      artifact-name: ${{ github.sha }}
-      branch: main
-  create-release:
-    needs: build-artifacts
-    uses: ./.github/workflows/create-release.yml
+  # check-changelog:
+  #   uses: ./.github/workflows/check-changelog.yml
+  # test:
+  #   uses: ./.github/workflows/test.yml
+  #   with:
+  #     branch: main
+  # build:
+  #   needs: test
+  #   uses: ./.github/workflows/build.yml
+  #   with:
+  #     branch: main
+  # build-artifacts:
+  #   needs: build
+  #   uses: ./.github/workflows/build-artifacts.yml
+  #   with:
+  #     artifact-name: ${{ github.sha }}
+  #     branch: main
+  # create-release:
+  #   needs: build-artifacts
+  #   uses: ./.github/workflows/create-release.yml
+  publish-npm:
+    # needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download built artifact
+        uses: actions/download-artifact@v3
+        with:
+          # name: ${{ github.sha }}
+          name: edb0e42fcdead87b950684e463919a6fab4a9123
+      - name: Setup node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16
+          registry-url: https://registry.npmjs.org/
+      - run: ls -R
+      # - run: npm publish
+      #   env:
+      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

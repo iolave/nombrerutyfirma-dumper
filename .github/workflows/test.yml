@@ -21,32 +21,10 @@ jobs:
     if: always()
     runs-on: ubuntu-latest
     steps:
-      - run: echo "${{ (needs.main.result == 'success' && 'passing' ) || 'failing' }}"
       - uses: peterrhodesdev/build-a-badge@v1.3.1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           filename: test-${{ inputs.branch }}
           label: ${{ (needs.main.result == 'success' && 'passing' ) || 'failing' }}
+          labelColor: ${{ (needs.main.result == 'success' && 'success' ) || 'critical' }}
           message: test
-  # build-badge-success:
-  #   needs: main
-  #   if: ${{ needs.build.result == 'success' }}
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: peterrhodesdev/build-a-badge@v1.3.1
-  #       with:
-  #         token: ${{ secrets.GITHUB_TOKEN }}
-  #         filename: test-${{ inputs.branch }}
-  #         label: success
-  #         message: test
-  # build-badge-failure:
-  #   needs: main
-  #   if: ${{ needs.build.result != 'success' }}
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: peterrhodesdev/build-a-badge@v1.3.1
-  #       with:
-  #         token: ${{ secrets.GITHUB_TOKEN }}
-  #         filename: test-${{ inputs.branch }}
-  #         label: failure
-  #         message: test

@@ -1,5 +1,7 @@
 # NRYF Dumper - CLI tool to web scrap chileans personal information
 
+![][BADGE-TEST-MAIN]
+
 ## Disclaimer
 NRYF Dumper is not affiliated by any means to the following information sources and it's creators: "elrutificador.com". The purpose of the code within this repository is only to query the already mentioned information sources without the need of a browser.
 
@@ -48,3 +50,6 @@ nryf-dumper --source=elrutificador --ruts=123456,1234567 --output=local-file  --
 ### Global options
 - Verbosity: `--verbose | --verbose=[number]`
 - Batch size (for parallel requests): `--batch-size=[number] # i.e. --batch-size=10`
+
+[BADGE-TEST-MAIN]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/wiki/iolave/nombrerutyfirma-dumper/test-main.md&logo=github
+[BADGE-BUILD-MAIN]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/wiki/iolave/nombrerutyfirma-dumper/build-main.md&logo=github

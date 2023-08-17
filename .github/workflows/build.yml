@@ -4,7 +4,9 @@ on:
       artifact-name:
         required: true
         type: string
-    
+      branch:
+          required: true
+          type: string    
 jobs:
   main:
     runs-on: ubuntu-latest
@@ -27,3 +29,16 @@ jobs:
           ./package.json
           ./package-lock.json
           ./node_modules
+  build-badge:
+    needs: main
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: peterrhodesdev/build-a-badge@v1.3.1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          filename: build-${{ inputs.branch }}
+          label: Build
+          message: ${{ (needs.main.result == 'success' && 'passing' ) || 'failing' }}
+          color: ${{ (needs.main.result == 'success' && 'success' ) || 'critical' }}
+        

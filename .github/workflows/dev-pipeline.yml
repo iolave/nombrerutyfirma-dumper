@@ -1,7 +1,7 @@
 # This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
 
-name: Build and test
+name: Develop
 
 on:
   push:
@@ -14,11 +14,12 @@ jobs:
     uses: ./.github/workflows/test.yml
     with:
       branch: dev
-  # build-artifacts:
-  #   needs: test
-  #   uses: ./.github/workflows/build-artifacts.yml
-  #   with:
-  #     artifact-name: $GITHUB_SHA
+  build:
+    needs: test
+    uses: ./.github/workflows/build.yml
+    with:
+      artifact-name: ${{ github.sha }}
+      branch: dev
   # publish:
   #   runs-on: ubuntu-latest
   #   needs: build

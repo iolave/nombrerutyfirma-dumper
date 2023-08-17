@@ -12,6 +12,8 @@ on:
 jobs:
   test:
     uses: ./.github/workflows/test.yml
+    with:
+      branch: dev
   # build-artifacts:
   #   needs: test
   #   uses: ./.github/workflows/build-artifacts.yml

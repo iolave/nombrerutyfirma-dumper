@@ -10,7 +10,14 @@ The author have no responsibility at all by the derived from the usage of this r
 ## Install
 - TODO: Allow to install via npm
 - TODO: Build binaries
-- TODO: install via source
+### Using source code
+```
+git clone https://github.com/iolave/nombrerutyfirma-dumper.git
+cd nombrerutyfirma-dumper
+npm ci
+npm run build
+npm install -g .
+```
 
 ## Usage
 ```

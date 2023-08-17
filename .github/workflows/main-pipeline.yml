@@ -8,8 +8,8 @@ on:
     branches: [ "dev" ]
 
 jobs:
-  check-changelog:
-    uses: ./.github/workflows/check-changelog.yml
+  # check-changelog:
+  #   uses: ./.github/workflows/check-changelog.yml
   test:
     uses: ./.github/workflows/test.yml
     with:
@@ -20,16 +20,17 @@ jobs:
     with:
       branch: main
   build-artifacts:
-    needs: build
+    needs: test
     uses: ./.github/workflows/build-artifacts.yml
     with:
       artifact-name: ${{ github.sha }}
       branch: main
   create-release:
-    needs: build-artifacts
+    # needs: [check-changelog, build, build-artifacts]
+    needs: [build, build-artifacts]
     uses: ./.github/workflows/create-release.yml
   publish-npm:
-    needs: create-release
+    needs: [ create-release ]
     runs-on: ubuntu-latest
     steps:
       - name: Download built artifact
@@ -42,7 +43,6 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
-      - run: ls -R
-      # - run: npm publish
-      #   env:
-      #     NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

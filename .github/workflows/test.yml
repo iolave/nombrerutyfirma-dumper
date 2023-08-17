@@ -17,6 +17,8 @@ jobs:
     - run: npm ci
     - run: npm run test
   build-badge:
+    needs: main
+    if: ${{ always() && !cancelled() && needs.build.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
       - uses: peterrhodesdev/build-a-badge@v1.3.1

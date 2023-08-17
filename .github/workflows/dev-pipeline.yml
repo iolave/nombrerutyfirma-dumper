@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: test
     steps:
-      - run: echo "${{ needs.build.result }}"
+      - run: echo "${{ needs.test.result }}"
   # build-artifacts:
   #   needs: test
   #   uses: ./.github/workflows/build-artifacts.yml

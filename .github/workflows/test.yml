@@ -1,0 +1,13 @@
+on:
+  workflow_call:
+    
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: '.nvmrc'
+    - run: npm ci
+    - run: echo "TODO: npm run test"

@@ -1,0 +1,15 @@
+on:
+  workflow_call:
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+    - name: Setup node
+      uses: actions/setup-node@v3
+      with:
+        node-version-file: '.nvmrc'
+    - run: npm i -g @changesets/cli@2.26.2
+    - run: changeset status
+ 

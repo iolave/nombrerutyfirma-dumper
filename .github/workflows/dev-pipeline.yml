@@ -5,9 +5,9 @@ name: Develop
 
 on:
   push:
-    branches: [ ]
+    branches: [ develop ]
   pull_request:
-    branches: [ ]
+    branches: [ develop ]
 
 jobs:
   check-changelog:

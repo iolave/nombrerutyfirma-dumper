@@ -12,11 +12,11 @@ on:
 jobs:
   test:
     uses: ./.github/workflows/test.yml
-  build-artifacts:
-    needs: test
-    uses: ./.github/workflows/build-artifacts.yml
-    with:
-      artifact-name: $GITHUB_SHA
+  # build-artifacts:
+  #   needs: test
+  #   uses: ./.github/workflows/build-artifacts.yml
+  #   with:
+  #     artifact-name: $GITHUB_SHA
   # publish:
   #   runs-on: ubuntu-latest
   #   needs: build

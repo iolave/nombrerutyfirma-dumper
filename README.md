@@ -5,7 +5,7 @@
 ## Disclaimer
 NRYF Dumper is not affiliated by any means to the following information sources and it's creators: "elrutificador.com". The purpose of the code within this repository is only to query the already mentioned information sources without the need of a browser.
 
-The author have no responsibility at all by the derived from the usage of this respository's code.
+The author have no responsibility at all by the derived usage of this respository's code.
 
 ## Install
 ### Via npm

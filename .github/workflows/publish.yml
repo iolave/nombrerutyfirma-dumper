@@ -7,6 +7,10 @@ on:
       branch:
         required: true
         type: string
+    secrets:
+      NPM_TOKEN:
+        description: 'A token passed from the caller workflow'
+        required: true
 jobs:
   main:
     runs-on: ubuntu-latest
@@ -20,8 +24,6 @@ jobs:
         with:
           node-version: 16
           registry-url: https://registry.npmjs.org/
-      - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }} > .npmrc"
-      - run: cat .npmrc"
       - run: npm publish
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

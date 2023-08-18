@@ -34,3 +34,5 @@ jobs:
     with:
       artifact-name: ${{ github.sha }}
       branch: main
+    secrets:
+      NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

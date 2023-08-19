@@ -85,7 +85,7 @@ program.showHelpAfterError();
 program.version(packageJson.version);
 
 const verboseOptionFlags = "--verbose [level]";
-const verboseOption = new Option(verboseOptionFlags, "verbose level, see RFC5424");
+const verboseOption = new Option(verboseOptionFlags, "set verbosity level (see RFC5424)");
 verboseOption.argParser<number>((value: string) => intParser(program, value, verboseOptionFlags));
 
 const sourceOptionFlags = "--source <source>";
@@ -112,7 +112,7 @@ rutOption.conflicts("ruts");
 rutOption.implies({ queryType: "single-rut" });
 
 const fromRutOptionFlags = "--from-rut <rut without dv>";
-const fromRutOption = new Option(fromRutOptionFlags, "search a bunch of ruts starting from this rut. eg: 1");
+const fromRutOption = new Option(fromRutOptionFlags, "search a bunch of ruts starting from this rut. i.e.: 1");
 fromRutOption.makeOptionMandatory(false);
 fromRutOption.conflicts("rut");
 fromRutOption.conflicts("ruts");
@@ -120,7 +120,7 @@ fromRutOption.argParser((value) => intParser(program, value, fromRutOptionFlags)
 fromRutOption.implies({ queryType: "ruts-range" });
 
 const toRutOptionFlags = "--to-rut <rut without dv>";
-const toRutOption = new Option(toRutOptionFlags, "search a bunch of ruts ending with this rut. eg: 1000000");
+const toRutOption = new Option(toRutOptionFlags, "search a bunch of ruts ending with this rut. i.e.: 1000000");
 toRutOption.makeOptionMandatory(false);
 toRutOption.conflicts("rut");
 toRutOption.conflicts("ruts");
@@ -128,7 +128,7 @@ toRutOption.argParser((value) => intParser(program, value, toRutOptionFlags));
 toRutOption.implies({ queryType: "ruts-range" });
 
 const rutsOptionFlags = "--ruts <...ruts without dv>";
-const rutsOption = new Option(rutsOptionFlags, "search a bunch of ruts. eg: 123456,123457,1234568");
+const rutsOption = new Option(rutsOptionFlags, "search a bunch of ruts. i.e.: 123456,123457,1234568");
 rutsOption.makeOptionMandatory(false);
 rutsOption.conflicts("rut");
 rutsOption.conflicts("fromRut");

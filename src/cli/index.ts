@@ -85,7 +85,7 @@ program.showHelpAfterError();
 program.version(packageJson.version);
 
 const verboseOptionFlags = "--verbose [level]";
-const verboseOption = new Option(verboseOptionFlags, "verbose level, see RFC5424");
+const verboseOption = new Option(verboseOptionFlags, "set verbosity level (see RFC5424)");
 verboseOption.argParser<number>((value: string) => intParser(program, value, verboseOptionFlags));
 
 const sourceOptionFlags = "--source <source>";

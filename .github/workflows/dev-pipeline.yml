@@ -6,8 +6,13 @@ name: Develop
 on:
   push:
     branches: [ develop ]
+    paths-ignore:
+      - .github/**/*
   pull_request:
     branches: [ develop ]
+    paths-ignore:
+      - .github/**/*
+
 
 jobs:
   check-changelog:

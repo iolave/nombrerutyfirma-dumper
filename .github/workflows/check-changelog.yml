@@ -9,7 +9,6 @@ jobs:
       with:
         fetch-depth: 0
     - run: |
-        apt install jq
         GIT_MAIN_BRANCH="origin/main"
         GIT_CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 

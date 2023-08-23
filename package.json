@@ -16,7 +16,9 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.json",
-    "test": "echo TODO"
+    "test": "echo TODO",
+    "version:changeset": "changeset add",
+    "version:bump": "changeset version && npm run install"
   },
   "repository": {
     "type": "git",

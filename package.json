@@ -1,6 +1,6 @@
 {
   "name": "nombrerutyfirma-dumper",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "CLI tool to web scrap chileans personal information",
   "keywords": [
     "nombrerutyfirma",
@@ -18,7 +18,7 @@
     "build": "tsc -p tsconfig.json",
     "test": "echo TODO",
     "version:changeset": "changeset add",
-    "version:bump": "changeset version && npm run install"
+    "version:bump": "changeset version && npm install"
   },
   "repository": {
     "type": "git",

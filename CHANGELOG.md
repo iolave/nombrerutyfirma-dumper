@@ -1,5 +1,18 @@
 # nombrerutyfirma-dumper
 
+## 1.1.0
+
+### Minor Changes
+
+- Added `--max-retries <number>` option that will retry on failure for some specific scenarios
+- Added elrutificadorByRut retry handler
+
+### Patch Changes
+
+- Added `package.json` keywords.
+- Bumped @types/node version
+- Added `version:changeset` and `version:bump` npm scripts
+
 ## 1.0.0
 
 ### Major Changes

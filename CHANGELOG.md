@@ -1,5 +1,14 @@
 # nombrerutyfirma-dumper
 
+## 1.0.1
+
+### Patch Changes
+
+# Changed
+- Bumped typescript patch version.
+- Replaced `eg:` to `i.e.:` within options descriptions.
+- Modified the `--verbose` option description.
+
 ## 1.0.0
 
 ### Major Changes

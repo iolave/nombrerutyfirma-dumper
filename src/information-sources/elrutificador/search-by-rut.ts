@@ -1,15 +1,19 @@
 import { unixTimestamp } from "../../util/date";
 import log from "../../config/logger";
 
-export default async function elrutificadorByRut(rut: string): Promise<ElRutificadorResponse> {
-    log.debug(`elrutificador: querying person by rut ${rut}`)
-    const token = await retrieveToken(rut);
-    log.debug(`elrutificador: retrieved token for rut ${rut}`);
-    const html = await retrieveHtml(token);
-    log.debug(`elrutificador: retrieved html for ${rut}`);
-    const data = extractDataFromHtml(html);
-    log.debug(`elrutificador: scrapped html for ${rut}`);
-    return data;
+export default async function elrutificadorByRut(rut: string, maxRetries?: number): Promise<ElRutificadorResponse> {
+    try {
+        log.debug(`elrutificador: querying person by rut ${rut}`);
+        const token = await retrieveToken(rut);
+        log.debug(`elrutificador: retrieved token for rut ${rut}`);
+        const html = await retrieveHtml(token);
+        log.debug(`elrutificador: retrieved html for ${rut}`);
+        const data = extractDataFromHtml(html);
+        log.debug(`elrutificador: scrapped html for ${rut}`);
+        return data;
+    } catch (error: unknown) {
+        return handleRetry(rut, error, maxRetries)
+    }
 }
 
 type ElRutificadorResponse = {
@@ -21,6 +25,24 @@ type ElRutificadorResponse = {
     birthdate: string;
     timestamp: number;
     source: "elrutificador.com";
+}
+
+async function handleRetry(rut: string, error: unknown, retriesLeft?: number): Promise<ElRutificadorResponse> {
+    if (typeof error !== 'object' || error === null) throw error;
+    if (!('cause' in error)) throw error;
+    if (typeof error.cause !== 'object' || error.cause === null) throw error;
+    if (!('code' in error.cause)) throw error;
+
+    if (error.cause.code === "UND_ERR_CONNECT_TIMEOUT") {
+        if (!retriesLeft || retriesLeft !== 0) {
+            const sleepTime = 5000;
+            log.warn(`elrutificador: connection timed out, retrying in ${sleepTime} ms...`);
+            await new Promise(resolve => setTimeout(() => resolve(undefined), sleepTime))
+            return await elrutificadorByRut(rut, retriesLeft ? retriesLeft-1 : retriesLeft);
+        }
+    }
+
+    throw error;
 }
 
 function formatBirthdate(str: string): string {

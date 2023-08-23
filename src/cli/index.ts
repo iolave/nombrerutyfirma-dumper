@@ -58,6 +58,7 @@ interface ProgramOptionsBase {
     source: InformationSource;
     output: Destination;
     outPath?: string;
+    maxRetries?: number;
 }
 
 interface SingleRutProgramOptions extends ProgramOptionsBase {
@@ -142,6 +143,11 @@ batchSizeOption.makeOptionMandatory(false);
 batchSizeOption.conflicts("rut");
 batchSizeOption.argParser((value) => intParser(program, value, batchSizeOptionFlags));
 
+const maxRetriesOptionFlags = "--max-retries <number>";
+const maxRetriesOption = new Option(maxRetriesOptionFlags, "number of max retries on specific scenarios. defaults to infinte");
+maxRetriesOption.makeOptionMandatory(false);
+maxRetriesOption.argParser((value) => intParser(program, value, maxRetriesOptionFlags));
+
 program.addOption(verboseOption);
 program.addOption(sourceOption);
 program.addOption(outputOption);
@@ -151,3 +157,4 @@ program.addOption(fromRutOption);
 program.addOption(toRutOption);
 program.addOption(rutsOption);
 program.addOption(batchSizeOption);
+program.addOption(maxRetriesOption);

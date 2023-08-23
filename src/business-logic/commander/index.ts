@@ -10,6 +10,7 @@ export default async function commanderAction(opts: ProgramOptions): Promise<nev
                 type: opts.queryType,
                 source: opts.source,
                 rut: opts.rut,
+                maxRetries: opts.maxRetries,
             });
         }
         if (opts.queryType === "ruts-range") {
@@ -19,6 +20,7 @@ export default async function commanderAction(opts: ProgramOptions): Promise<nev
                 from: opts.fromRut,
                 to: opts.toRut,
                 batchSize: opts.batchSize,
+                maxRetries: opts.maxRetries,
             });
         }
         if (opts.queryType === "multiple-ruts") {
@@ -27,6 +29,7 @@ export default async function commanderAction(opts: ProgramOptions): Promise<nev
                 source: opts.source,
                 ruts: opts.ruts,
                 batchSize: opts.batchSize,
+                maxRetries: opts.maxRetries,
             });
         }
     }
@@ -40,6 +43,7 @@ export default async function commanderAction(opts: ProgramOptions): Promise<nev
                 rut: opts.rut,
                 source: opts.source,
                 path,
+                maxRetries: opts.maxRetries,
             });
         }
         if (opts.queryType === "ruts-range") {
@@ -50,6 +54,7 @@ export default async function commanderAction(opts: ProgramOptions): Promise<nev
                 source: opts.source,
                 path,
                 batchSize: opts.batchSize,
+                maxRetries: opts.maxRetries,
             });
         }
         if (opts.queryType === "multiple-ruts") {
@@ -59,6 +64,7 @@ export default async function commanderAction(opts: ProgramOptions): Promise<nev
                 source: opts.source,
                 path,
                 batchSize: opts.batchSize,
+                maxRetries: opts.maxRetries,
             });
         }
     }

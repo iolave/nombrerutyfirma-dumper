@@ -7,6 +7,7 @@ export type SingleRutOptions = {
     type: "single-rut",
     source: InformationSource,
     rut: number,
+    maxRetries?: number,
 }
 
 export type RutsRangeOptions = {
@@ -15,6 +16,7 @@ export type RutsRangeOptions = {
     from: number,
     to: number,
     batchSize?: number;
+    maxRetries?: number,
 }
 
 export type MultipleRutsOptions = {
@@ -22,6 +24,7 @@ export type MultipleRutsOptions = {
     source: InformationSource,
     ruts: number[],
     batchSize?: number;
+    maxRetries?: number,
 }
 
 export type ConsoleActionOptions = SingleRutOptions | RutsRangeOptions | MultipleRutsOptions;
@@ -36,7 +39,7 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
         }
 
         if (opts.source === "elrutificador") {
-            await elrutificadorByRut(rut)
+            await elrutificadorByRut(rut, opts.maxRetries)
                 .then(JSON.stringify)
                 .then(log.info)
                 .catch((error: Error) => {
@@ -64,7 +67,7 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
                 break;
             };
 
-            const promise = elrutificadorByRut(rut)
+            const promise = elrutificadorByRut(rut, opts.maxRetries)
                 .then(JSON.stringify)
                 .then(log.info)
                 .catch((error: Error) => {
@@ -99,7 +102,7 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
                 break;
             };
 
-            const promise = elrutificadorByRut(rut)
+            const promise = elrutificadorByRut(rut, opts.maxRetries)
                 .then(JSON.stringify)
                 .then(log.info)
                 .catch((error: Error) => {

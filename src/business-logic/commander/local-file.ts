@@ -11,6 +11,7 @@ export type SingleRutOptions = {
     source: InformationSource,
     rut: number,
     path: string;
+    maxRetries?: number;
 }
 
 export type RutsRangeOptions = {
@@ -20,6 +21,7 @@ export type RutsRangeOptions = {
     to: number,
     path: string;
     batchSize?: number;
+    maxRetries?: number;
 }
 
 export type MultipleRutsOptions = {
@@ -28,6 +30,7 @@ export type MultipleRutsOptions = {
     ruts: number[],
     path: string;
     batchSize?: number;
+    maxRetries?: number;
 }
 
 export type LocalFileActionOptions = SingleRutOptions | RutsRangeOptions | MultipleRutsOptions;
@@ -45,7 +48,7 @@ export default async function localFileAction(opts: LocalFileActionOptions): Pro
         }
 
         if (opts.source === "elrutificador") {
-            await elrutificadorByRut(rut)
+            await elrutificadorByRut(rut, opts.maxRetries)
                 .then(JSON.stringify)
                 .then(res => res.concat(EOL))
                 .then(Buffer.from)
@@ -82,7 +85,7 @@ export default async function localFileAction(opts: LocalFileActionOptions): Pro
                     process.exit(1);
                 }
 
-                const promise = elrutificadorByRut(rut)
+                const promise = elrutificadorByRut(rut, opts.maxRetries)
                     .then(JSON.stringify)
                     .then(res => res.concat(EOL))
                     .then(Buffer.from)
@@ -131,7 +134,7 @@ export default async function localFileAction(opts: LocalFileActionOptions): Pro
                     process.exit(1);
                 }
 
-                const promise = elrutificadorByRut(rut)
+                const promise = elrutificadorByRut(rut, opts.maxRetries)
                     .then(JSON.stringify)
                     .then(res => res.concat(EOL))
                     .then(Buffer.from)

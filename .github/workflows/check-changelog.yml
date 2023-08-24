@@ -8,9 +8,46 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    - name: Setup node
-      uses: actions/setup-node@v3
-      with:
-        node-version-file: '.nvmrc'
-    - run: npm i -g check-changelog@0.0.2
-    - run: check-changelog
+    - name: Check package.json version
+      run: |
+        GIT_CURRENT_BRANCH=$GITHUB_SHA
+        echo $GIT_CURRENT_BRANCH
+
+        # Retrieves old version
+        if [[ "$GIT_CURRENT_BRANCH" = "main" ]]; then
+          GIT_PREV_COMMIT=$(git rev-parse HEAD^)
+          echo "Main branch previous commit: $GIT_PREV_COMMIT"
+          git checkout $GIT_PREV_COMMIT
+          VERSION_OLD=$(cat package.json | jq -r '.version')
+          echo "Main branch previous package.json version: $VERSION_OLD"
+          git checkout $GIT_CURRENT_BRANCH
+        else
+          GIT_MAIN_BRANCH="origin/main"
+          git checkout $GIT_MAIN_BRANCH
+          VERSION_OLD=$(cat package.json | jq -r '.version')
+          echo "Main branch package.json version: $VERSION_OLD"
+          git checkout $GIT_CURRENT_BRANCH
+        fi
+        
+        # Retrieves new version
+        git checkout $GIT_CURRENT_BRANCH
+        VERSION_NEW=$(cat package.json | jq -r '.version')
+        echo "New package.json version: $VERSION_NEW"
+
+        if [[ "$VERSION_OLD" = "$VERSION_NEW" ]]; then
+          echo "please bump package.json version"
+          exit 1
+        else 
+          echo "package.json version is up to date"
+        fi
+    - name: Check CHANGELOG.md content
+      run: |
+        VERSION_NEW=$(cat package.json | jq -r '.version')
+        cat CHANGELOG.md | grep -o "## $VERSION_NEW"
+
+        if [[ "$?" = "0" ]]; then
+          echo "CHANGELOG.md seems to have changes"
+        else
+          echo "please add changes to the CHANGELOG.md file"
+          exit 1
+        fi

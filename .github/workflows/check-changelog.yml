@@ -14,7 +14,7 @@ jobs:
         echo $GIT_CURRENT_BRANCH
 
         # Retrieves old version
-        if [[ "$GIT_CURRENT_BRANCH" = "main" ]]; then
+        if [[ "$GITHUB_REF" = "refs/heads/main" ]]; then
           VERSION_OLD=$(curl -s https://registry.npmjs.org/nombrerutyfirma-dumper  | jq -r '."dist-tags".latest')
           echo "Previous package.json version: $VERSION_OLD"
         else

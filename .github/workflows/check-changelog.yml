@@ -15,12 +15,8 @@ jobs:
 
         # Retrieves old version
         if [[ "$GIT_CURRENT_BRANCH" = "main" ]]; then
-          GIT_PREV_COMMIT=$(git rev-parse HEAD^)
-          echo "Main branch previous commit: $GIT_PREV_COMMIT"
-          git checkout $GIT_PREV_COMMIT
-          VERSION_OLD=$(cat package.json | jq -r '.version')
-          echo "Main branch previous package.json version: $VERSION_OLD"
-          git checkout $GIT_CURRENT_BRANCH
+          VERSION_OLD=$(curl -s https://registry.npmjs.org/nombrerutyfirma-dumper  | jq -r '."dist-tags".latest')
+          echo "Previous package.json version: $VERSION_OLD"
         else
           GIT_MAIN_BRANCH="origin/main"
           git checkout $GIT_MAIN_BRANCH

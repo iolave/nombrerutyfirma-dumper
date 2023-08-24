@@ -10,7 +10,7 @@ jobs:
         fetch-depth: 0
     - name: Check package.json version
       run: |
-        GIT_CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
+        GIT_CURRENT_BRANCH=$GITHUB_SHA
         echo $GIT_CURRENT_BRANCH
 
         # Retrieves old version

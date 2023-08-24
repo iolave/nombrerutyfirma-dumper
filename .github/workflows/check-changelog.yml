@@ -11,25 +11,28 @@ jobs:
     - name: Check package.json version
       run: |
         GIT_CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-        
+        echo $GIT_CURRENT_BRANCH
+
         # Retrieves old version
         if [[ "$GIT_CURRENT_BRANCH" = "main" ]]; then
           GIT_PREV_COMMIT=$(git rev-parse HEAD^)
+          echo "Main branch previous commit: $GIT_PREV_COMMIT"
           git checkout $GIT_PREV_COMMIT
           VERSION_OLD=$(cat package.json | jq -r '.version')
-
+          echo "Main branch previous package.json version: $VERSION_OLD"
           git checkout $GIT_CURRENT_BRANCH
         else
           GIT_MAIN_BRANCH="origin/main"
           git checkout $GIT_MAIN_BRANCH
           VERSION_OLD=$(cat package.json | jq -r '.version')
-
+          echo "Main branch package.json version: $VERSION_OLD"
           git checkout $GIT_CURRENT_BRANCH
         fi
         
         # Retrieves new version
         git checkout $GIT_CURRENT_BRANCH
         VERSION_NEW=$(cat package.json | jq -r '.version')
+        echo "New package.json version: $VERSION_NEW"
 
         if [[ "$VERSION_OLD" = "$VERSION_NEW" ]]; then
           echo "please bump package.json version"

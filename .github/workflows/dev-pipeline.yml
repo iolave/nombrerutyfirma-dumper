@@ -5,10 +5,17 @@ name: Develop
 
 on:
   push:
-    branches: [ develop ]
+    branches: 
+      - '**'
+      - '!main'
+    paths-ignore:
+      - .github/**/*
   pull_request:
-    branches: [ develop ]
-
+    branches:
+      - '**'
+      - '!main'
+    paths-ignore:
+      - .github/**/*
 jobs:
   check-changelog:
     uses: ./.github/workflows/check-changelog.yml

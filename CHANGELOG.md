@@ -5,13 +5,31 @@
 ### Minor Changes
 
 - Added `--max-retries <number>` option that will retry on failure for some specific scenarios
-- Added elrutificadorByRut retry handler
+- Added `elrutificadorByRut()` retry handler
 
 ### Patch Changes
 
 - Added `package.json` keywords.
-- Bumped @types/node version
 - Added `version:changeset` and `version:bump` npm scripts
+## 1.0.3
+
+### Patch Changes
+
+- Bumped `typescript` dev dependency version to 5.1.6
+
+## 1.0.2
+
+### Patch Changes
+
+- Bumped `@types/node` dev dependency version to 20.5.3
+
+## 1.0.1
+
+### Patch Changes
+
+- Bumped typescript patch version.
+- Replaced `eg:` to `i.e.:` within options descriptions.
+- Modified the `--verbose` option description.
 
 ## 1.0.0
 

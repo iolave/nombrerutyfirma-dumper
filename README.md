@@ -5,7 +5,7 @@
 ## Disclaimer
 NRYF Dumper is not affiliated by any means to the following information sources and it's creators: "elrutificador.com". The purpose of the code within this repository is only to query the already mentioned information sources without the need of a browser.
 
-The author have no responsibility at all by the derived from the usage of this respository's code.
+The author have no responsibility at all by the derived usage of this respository's code.
 
 ## Install
 ### Via npm
@@ -59,6 +59,7 @@ nryf-dumper --source=elrutificador --ruts=123456,1234567 --output=local-file  --
 ### Global options
 - Verbosity: `--verbose | --verbose=[number]`
 - Batch size (for parallel requests): `--batch-size=[number] # i.e. --batch-size=10`
+- Max retries: `--max-retries=<number> # i.e. --max-retries=0`
 
 [BADGE-TEST-MAIN]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/wiki/iolave/nombrerutyfirma-dumper/test-main.md&logo=github
 [BADGE-BUILD-MAIN]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/wiki/iolave/nombrerutyfirma-dumper/build-main.md&logo=github

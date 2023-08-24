@@ -1,19 +1,16 @@
 # nombrerutyfirma-dumper
 
 ## 1.0.3
-
 ### Patch Changes
 
 - Bumped `typescript` dev dependency version to 5.1.6
 
 ## 1.0.2
-
 ### Patch Changes
 
 - Bumped `@types/node` dev dependency version to 20.5.3
 
 ## 1.0.1
-
 ### Patch Changes
 
 - Bumped typescript patch version.
@@ -21,7 +18,6 @@
 - Modified the `--verbose` option description.
 
 ## 1.0.0
-
 ### Major Changes
 
 - Added `--source` flag with support for `elrutificador.com` information source.

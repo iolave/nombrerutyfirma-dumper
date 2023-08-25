@@ -11,7 +11,11 @@ on:
     paths-ignore:
       - .github/**/*
 jobs:
+  check-changeset:
+    if: github.ref != 'refs/heads/develop'
+    uses: ./.github/workflows/check-changeset.yml
   check-changelog:
+    if: github.ref == 'refs/heads/develop'
     uses: ./.github/workflows/check-changelog.yml
   test:
     uses: ./.github/workflows/test.yml

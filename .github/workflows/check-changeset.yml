@@ -1,0 +1,38 @@
+on:
+  workflow_call:
+jobs:
+  main:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    - run: echo "current commit sha $GITHUB_SHA"
+    - name: Retrieve develop branch changesets
+      id: list_changesets
+      run: |
+        if [[ -d .changeset ]]; then
+          git checkout origin/develop
+          CHANGESETS_DEV=$(ls -lA .changeset/*.md | awk '{print $9}')
+          echo "origin/develop changesets:"
+          echo $CHANGESETS_DEV
+          git checkout $GITHUB_SHA
+          echo "CHANGESETS_DEV=$CHANGESETS_DEV" >> $GITHUB_OUTPUT
+        else 
+          echo ".changeset directory does not exists"
+        fi
+    - name: Comparing develop changesets against current changes
+      run: |  
+        CHANGESETS_CURRENT=$(ls -lA .changeset/*.md | awk '{print $9}')
+        RESULT=1
+        for CURRENT_MD in "$CHANGESETS_CURRENT"; do
+          echo "${{ steps.list_changesets.outputs.CHANGESETS_DEV }}" | grep -o $CURRENT_MD &> /dev/null
+          if [[ "$?" = "1" ]]; then RESULT=0; fi
+        done
+
+        if [[ "$RESULT" = "1" ]]; then 
+          echo "Please add a changeset by running npm run version:changeset"
+          exit 1
+        fi
+        echo "New changeset found"

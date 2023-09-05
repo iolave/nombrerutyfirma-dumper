@@ -6,9 +6,9 @@ import log from "../../config/logger";
 
 // puppeteer.use(StealthPlugin());
 
-var cfToken = "";
 
 export default async function elrutificadorByRut(rut: string, maxRetries?: number): Promise<ElRutificadorResponse> {
+    const cfToken = "";
     try {
         log.debug(`elrutificador: querying person by rut ${rut}`);
         const token = await retrieveToken(rut, cfToken);

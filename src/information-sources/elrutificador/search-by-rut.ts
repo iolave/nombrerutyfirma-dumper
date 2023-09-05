@@ -11,13 +11,16 @@ export default async function elrutificadorByRut(rut: string, maxRetries?: numbe
     const cfToken = "";
     try {
         log.debug(`elrutificador: querying person by rut ${rut}`);
+
         const token = await retrieveToken(rut, cfToken);
         log.debug(`elrutificador: retrieved token for rut ${rut}: ${token}`);
+
         const html = await retrieveHtml(token, cfToken);
-        console.log(html)
         log.debug(`elrutificador: retrieved html for ${rut}`);
+
         const data = extractDataFromHtml(html);
         log.debug(`elrutificador: scrapped html for ${rut}`);
+
         return data;
     } catch (error: unknown) {
         return handleRetry(rut, error, maxRetries)
@@ -55,10 +58,10 @@ async function handleRetry(rut: string, error: unknown, retriesLeft?: number): P
     }
 
 
+    var sleepTime = 5000;
     if (error.name !== "elrutificador_error") throw error;
-    if (error.code === "ip_banned") throw error;
-    
-    const sleepTime = 5000;
+    if (error.code === "ip_banned") sleepTime = 10000;
+
     log.warn(`elrutificador: ${error.code} - ${error.message}, retrying in ${sleepTime} ms...`);
     await new Promise(resolve => setTimeout(() => resolve(undefined), sleepTime))
 

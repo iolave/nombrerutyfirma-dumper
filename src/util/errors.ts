@@ -1,12 +1,12 @@
 export class NRYFError extends Error {
     name: string;
-    message: string;
     code: string;
+    message: string;
 
-    constructor(name: string, message: string, code: string) {
+    constructor(name: string, code: string, message: string) {
         super();
         this.name = name;
-        this.message = message;
         this.code = code;
+        this.message = message;
     }
 }

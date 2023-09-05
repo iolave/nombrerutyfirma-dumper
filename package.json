@@ -39,6 +39,10 @@
   },
   "dependencies": {
     "commander": "^11.0.0",
+    "puppeteer": "^21.1.1",
+    "puppeteer-core": "^21.1.1",
+    "puppeteer-extra": "^3.3.6",
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
     "winston": "^3.10.0"
   }
 }

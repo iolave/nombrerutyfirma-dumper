@@ -60,7 +60,7 @@ async function handleRetry(rut: string, error: unknown, retriesLeft?: number): P
 
     var sleepTime = 5000;
     if (error.name !== "elrutificador_error") throw error;
-    if (error.code === "ip_banned") sleepTime = 10000;
+    if (error.code === "cf_ip_banned") sleepTime = 10000;
     // if (error.code === "cf_clearance_expired") cfToken = await getCfClearance();
 
     log.warn(`elrutificador: ${error.code} - ${error.message}, retrying in ${sleepTime} ms...`);
@@ -139,7 +139,7 @@ async function retrieveToken(rut: string): Promise<string> {
         data: body,
     });
 
-    if (response.data.toUpperCase().includes("BANNED")) throw new NRYFError("elrutificador_error", "ip_banned", "Cloudflare banned the active ip");
+    if (response.data.toUpperCase().includes("BANNED")) throw new NRYFError("elrutificador_error", "cf_ip_banned", "Cloudflare banned the active ip");
     const match = response.data.match(/value='(.*)\.(.*)\.(.*)'/)?.at(0);
     if (!match) throw new NRYFError("elrutificador_error", "no_jwt", "no jwt found within response");
     return match.slice(7,-12);

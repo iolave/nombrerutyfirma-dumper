@@ -2,6 +2,7 @@ import { InformationSource } from ".";
 import { calculateDv, formatRut } from "../../util/rut";
 import log from "../../config/logger";
 import elrutificadorByRut from "../../information-sources/el-rutificador/search-by-rut";
+import NombreRutYFirma from "../../information-sources/nombre-rut-y-firma";
 
 export type SingleRutOptions = {
     type: "single-rut",
@@ -45,6 +46,20 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
                 .catch((error: Error) => {
                     if (!error.message) throw error;
                     if (error.message !== "elrutificador_error: no table found in html") throw error;
+                    log.info(`${opts.source}: data not found for rut ${rut}`);
+                    process.exit(1);
+                })
+            ;
+            process.exit(0);
+        }
+
+        if (opts.source === "nombrerutyfirma") {
+            await NombreRutYFirma.searchByRut(rut)
+                .then(JSON.stringify)
+                .then(log.info)
+                .catch((error: Error) => {
+                    if (!error.message) throw error;
+                    if (error.message !== "nombrerutyfirma_error: no table found in html") throw error;
                     log.info(`${opts.source}: data not found for rut ${rut}`);
                     process.exit(1);
                 })

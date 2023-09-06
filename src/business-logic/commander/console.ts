@@ -44,9 +44,12 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
             await elrutificadorByRut(rut, opts.maxRetries)
                 .then(JSON.stringify)
                 .then(log.info)
-                .catch((error: Error) => {
-                    if (!error.message) throw error;
-                    if (error.message !== "elrutificador_error: no table found in html") throw error;
+                .catch((error: NRYFError) => {
+                    if (error.code !== "data_not_found") {
+                        log.error(`${opts.source}: ${JSON.stringify(error)}`);
+                        throw error;
+                    }
+
                     log.info(`${opts.source}: data not found for rut ${rut}`);
                     process.exit(1);
                 })
@@ -90,9 +93,11 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
                 promise = elrutificadorByRut(rut, opts.maxRetries)
                     .then(JSON.stringify)
                     .then(log.info)
-                    .catch((error: Error) => {
-                        if (!error.message) throw error;
-                        if (error.message !== "elrutificador_error: no table found in html") throw error;
+                    .catch((error: NRYFError) => {
+                        if (error.code !== "data_not_found") {
+                            log.error(`${opts.source}: ${JSON.stringify(error)}`);
+                            throw error;
+                        }
                         log.info(`${opts.source}: data not found for rut ${rut}, skipping`);
                     })
                 ;
@@ -142,9 +147,11 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
                 promise = elrutificadorByRut(rut, opts.maxRetries)
                     .then(JSON.stringify)
                     .then(log.info)
-                    .catch((error: Error) => {
-                        if (!error.message) throw error;
-                        if (error.message !== "elrutificador_error: no table found in html") throw error;
+                    .catch((error: NRYFError) => {
+                        if (error.code !== "data_not_found") {
+                            log.error(`${opts.source}: ${JSON.stringify(error)}`);
+                            throw error;
+                        }
                         log.info(`${opts.source}: data not found for rut ${rut}, skipping`);
                     })
                 ;

@@ -57,10 +57,13 @@ export default async function localFileAction(opts: LocalFileActionOptions): Pro
                 .then((buf) => { writeStream.write(buf) })
                 .then(() => log.info(`${opts.source}: wrote found data for rut ${rut} to ${filePath}`))
                 .then(() => writeStream.close())
-                .catch((error: Error) => {
+                .catch((error: NRYFError) => {
                     writeStream.close();
-                    if (!error.message) throw error;
-                    if (error.message !== "elrutificador_error: no table found in html") throw error;
+                    if (error.code !== "data_not_found") {
+                        log.error(`${opts.source}: ${JSON.stringify(error)}`);
+                        throw error;
+                    }
+                    
                     log.info(`${opts.source}: data not found for rut ${rut}`);
                     process.exit(1);
                 })
@@ -116,12 +119,8 @@ export default async function localFileAction(opts: LocalFileActionOptions): Pro
                     .then(Buffer.from)
                     .then((buf) => { writeStream.write(buf) })
                     .then(() => log.info(`${opts.source}: wrote found data for rut ${rut} to ${filePath}`))
-                    .catch((error: Error) => {
-                        if (!error.message) {
-                            writeStream.close();
-                            throw error;
-                        }
-                        if (error.message !== "elrutificador_error: no table found in html") {
+                    .catch((error: NRYFError) => {
+                        if (error.code !== "data_not_found") {
                             writeStream.close();
                             throw error;
                         }
@@ -183,12 +182,8 @@ export default async function localFileAction(opts: LocalFileActionOptions): Pro
                     .then(Buffer.from)
                     .then((buf) => { writeStream.write(buf) })
                     .then(() => log.info(`${opts.source}: wrote found data for rut ${rut} to ${filePath}`))
-                    .catch((error: Error) => {
-                        if (!error.message) {
-                            writeStream.close();
-                            throw error;
-                        }
-                        if (error.message !== "elrutificador_error: no table found in html") {
+                    .catch((error: NRYFError) => {
+                        if (error.code !== "data_not_found") {
                             writeStream.close();
                             throw error;
                         }

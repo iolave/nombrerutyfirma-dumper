@@ -1,14 +1,14 @@
 import { unixTimestamp } from "../../util/date";
 import { NRYFError } from '../../util/errors';
 import log from "../../config/logger";
-// import puppeteer from "puppeteer-extra";
-// import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import puppeteer from "puppeteer-extra";
+import StealthPlugin from "puppeteer-extra-plugin-stealth";
 
-// puppeteer.use(StealthPlugin());
+puppeteer.use(StealthPlugin());
 
 
+var cfToken = "";
 export default async function elrutificadorByRut(rut: string, maxRetries?: number): Promise<ElRutificadorResponse> {
-    const cfToken = "";
     try {
         log.debug(`elrutificador: querying person by rut ${rut}`);
 
@@ -61,6 +61,7 @@ async function handleRetry(rut: string, error: unknown, retriesLeft?: number): P
     var sleepTime = 5000;
     if (error.name !== "elrutificador_error") throw error;
     if (error.code === "ip_banned") sleepTime = 10000;
+    // if (error.code === "cf_clearance_expired") cfToken = await getCfClearance();
 
     log.warn(`elrutificador: ${error.code} - ${error.message}, retrying in ${sleepTime} ms...`);
     await new Promise(resolve => setTimeout(() => resolve(undefined), sleepTime))
@@ -102,11 +103,15 @@ async function retrieveHtml(token: string, cloudFlareToken: string): Promise<str
     url.pathname = "/resultados/";
 
     const headers = new Headers();
-    headers.append("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8");
+    headers.append("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
     headers.append("Accept-Encoding", "gzip, deflate, br");
     headers.append("Accept-Language", "en-US,en;q=0.8");
     headers.append("Cache-Control", "no-cache");
-    headers.append("Cookie", `cf_clearance=${cloudFlareToken};jwt=${token}`);
+    headers.append("Connection", "keep-alive");
+    headers.append("Content-Type", "application/x-www-form-urlencoded");
+    headers.append("Cookie", `cf_clearance=${cloudFlareToken};cf_use_ob=0`);
+    headers.append("Host", `elrutificador.com`);
+    headers.append("Origin", `https://elrutificador.com`);
     headers.append("Pragma", "no-cache");
     headers.append("Referer", "https://elrutificador.com/");
     headers.append("Sec-Ch-Ua", '"Chromium";v="116", "Not)A;Brand";v="24", "Brave";v="116"');
@@ -120,14 +125,21 @@ async function retrieveHtml(token: string, cloudFlareToken: string): Promise<str
     headers.append("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36");
    
 
+    const formData = new FormData();
+    formData.append("jwt", token);
+    formData.append("MIME Type", "application/x-www-form-urlencoded");
+
     const requestInit: RequestInit = {
-        method: "GET",
+        method: "POST",
         headers,
+        body: formData
     }
+
     
     const response = await fetch(url, requestInit);
     const responseText = await response.text();
-
+    // console.log(responseText);
+    
     if (responseText.toUpperCase().includes("BANNED")) throw new NRYFError("elrutificador_error", "ip_banned", "Cloudflare banned the active ip");
     if (responseText.toUpperCase().includes("ACCESS DENIED")) throw new NRYFError("elrutificador_error", "cf_clearance_expired", "");
     
@@ -136,27 +148,26 @@ async function retrieveHtml(token: string, cloudFlareToken: string): Promise<str
 
 async function retrieveToken(rut: string, cloudFlareToken: string): Promise<string> {
     const url = new URL("https://elrutificador.com");
-    url.pathname = "/";
 
     const headers = new Headers();
     headers.append("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8");
-    headers.append("Accept-Encoding", "gzip, deflate, br");
     headers.append("Accept-Language", "en-US,en;q=0.8");
     headers.append("Cache-Control", "no-cache");
-    headers.append("Cookie", `cf_clearance=${cloudFlareToken}`);
+    headers.append("Cookie", `cf_clearance=rFkbmtyoUKIMgh3.3E0ds.7q_9ebT_ogx.VknAwziug-1693957581-0-1-e30fb622.ce8d8159.7f0595c2-0.2.1693957581;${cloudFlareToken}`);
     headers.append("Origin", "https://elrutificador.com");
     headers.append("Pragma", "no-cache");
     headers.append("Referer", "https://elrutificador.com/");
     headers.append("Sec-Ch-Ua", '"Chromium";v="116", "Not)A;Brand";v="24", "Brave";v="116"');
     headers.append("Sec-Ch-Ua-Mobile", "?0");
     headers.append("Sec-Ch-Ua-Platform", '"macOS"');
-    headers.append("Sec-Fetch-Site", "same-origin");
-    headers.append("Sec-Fetch-Mode", "navigate");
     headers.append("Sec-Fetch-Dest", "document");
+    headers.append("Sec-Fetch-Mode", "navigate");
+    headers.append("Sec-Fetch-Site", "same-origin");
     headers.append("Sec-Fetch-User", "?1");
     headers.append("Sec-Gpc", "1");
     headers.append("Upgrade-Insecure-Requests", "1");
-    headers.append("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Safari/605.1.15");
+    headers.append("User-Agent", "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36");
+    headers.append("Content-Type", "application/x-www-form-urlencoded");
 
     const formData = new FormData();
     formData.set("term", rut);
@@ -169,18 +180,25 @@ async function retrieveToken(rut: string, cloudFlareToken: string): Promise<stri
     }
 
     const response = await fetch(url, requestInit);
-    const responseText = await response.text().then(t => t.toUpperCase());
+    const responseText = await response.text();
 
-    if (responseText.includes("BANNED")) throw new NRYFError("elrutificador_error", "ip_banned", "Cloudflare banned the active ip");
-    if (responseText.includes("ACCESS DENIED")) throw new NRYFError("elrutificador_error", "cf_clearance_expired", "");
+    const match = responseText.match(/value='(.*)\.(.*)\.(.*)'/)
 
-    const setCookieHeader = response.headers.get("Set-Cookie");
-    if (!setCookieHeader) throw new NRYFError("elrutificador_error", "cf_clearance_expired", "");
-    const cookies = setCookieHeader.split(";");
-    const jwt = cookies.filter(c => c.includes("jwt=")).at(0);
+    console.log(match, responseText)
+    process.exit(1);
 
-    if (!jwt) throw new NRYFError("elrutificador_error", "no_jwt", "Failed to retrieve jwt token from the set-cookie header");
-    return jwt.slice(4);
+    // if (responseText.toUpperCase().includes("BANNED")) throw new NRYFError("elrutificador_error", "ip_banned", "Cloudflare banned the active ip");
+    // if (responseText.toUpperCase().includes("ACCESS DENIED")) throw new NRYFError("elrutificador_error", "cf_clearance_expired", "");
+
+
+    // const setCookieHeader = response.headers.get("Set-Cookie");
+    // if (!setCookieHeader) throw new NRYFError("elrutificador_error", "cf_clearance_expired", "");
+    // const cookies = setCookieHeader.split(";");
+    // const jwt = cookies.filter(c => c.includes("jwt=")).at(0);
+
+    // if (!jwt) throw new NRYFError("elrutificador_error", "no_jwt", "Failed to retrieve jwt token from the set-cookie header");
+    // return jwt.slice(4);
+    // return "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2VscnV0aWZpY2Fkb3IuY29tIiwiZXhwIjoyNjkzOTU1ODA3LCJuYmYiOjE2OTM5NTU4MDQsInRlcm0iOiIxOS40MDguMTM4LTMiLCJvcHQiOiJydXQifQ.4aVQUPI_Bpk1YtIXDfcpOB0uPryux5yKD-8sLzScWC0";
 }
 
 /* 
@@ -191,10 +209,9 @@ async function retrieveToken(rut: string, cloudFlareToken: string): Promise<stri
 //     const browser = await puppeteer.launch({ headless: true, args: [ '--no-startup-widnow' ] });
 //     const page = await browser.newPage();
 //     await page.setUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.6 Safari/605.1.15");
-//     const response = await page.goto("https://elrutificador.com");
+//     await page.goto("https://elrutificador.com");
 //     await new Promise(r => setTimeout(r, 10000));
 //     const cookies = await page.cookies();
-//     console.log(response?.headers())
 
 //     const cfClearanceCookie = cookies.filter(c => c.name === "cf_clearance").at(0);
 //     if (!cfClearanceCookie) throw new Error("Elrutificador cf_clearance cookie generation error");

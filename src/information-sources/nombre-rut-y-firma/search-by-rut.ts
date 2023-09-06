@@ -19,6 +19,14 @@ export default async function searchByRut(rut: string, maxRetries?: number): Pro
 }
 
 function extractDataFromHtml(html: string): NombreRutYFirmaResponse {
+    if (html.toUpperCase().includes("YOU ARE BEING RATE LIMITED")) {
+        throw new NRYFError(
+            `${source}_error`,
+            'cf_rate_limited',
+            `You are being rate limited`,
+        );
+    }
+
     const htmlWithoutLineBreaks = html.replace(/[\r\n]/gm, '');
     
     const tableRegex = /<tbody>.*<\/tbody>/
@@ -96,6 +104,13 @@ export async function handleRetry(rut: string, error: unknown, retriesLeft?: num
     
     if (error.code === 'fetch_error') {
         const sleepTime = 5000;
+        log.warn(`${source}: ${error.code} - ${error.message}, retrying in ${sleepTime} ms...`);
+        await new Promise(resolve => setTimeout(() => resolve(undefined), sleepTime))
+        return await searchByRut(rut, retriesLeft ? retriesLeft-1 : retriesLeft);
+    }
+
+    if (error.code === 'cf_rate_limited') {
+        const sleepTime = 600000;
         log.warn(`${source}: ${error.code} - ${error.message}, retrying in ${sleepTime} ms...`);
         await new Promise(resolve => setTimeout(() => resolve(undefined), sleepTime))
         return await searchByRut(rut, retriesLeft ? retriesLeft-1 : retriesLeft);

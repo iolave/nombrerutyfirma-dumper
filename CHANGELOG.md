@@ -1,5 +1,18 @@
 # nombrerutyfirma-dumper
 
+## 1.3.0
+
+### Minor Changes
+
+- b44eb10: Added `nombrerutyfirma.com` search by rut method
+- 6877f81: Added `nombrerutyfirma` cli source
+
+### Patch Changes
+
+- 4e42eb2: Added `node-fetch-commonjs` dependency as it includes `FetchError`
+- 66a23e3: Added scoped NRYFError error codes to have more control over errors
+- 761ffa0: Renamed `elrutifcador` source internal directory to `el-rutificador`
+
 ## 1.2.1
 
 ### Patch Changes

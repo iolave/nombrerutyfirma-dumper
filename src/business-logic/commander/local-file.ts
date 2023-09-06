@@ -4,7 +4,7 @@ import { EOL } from "os";
 import { InformationSource } from ".";
 import { calculateDv, formatRut } from "../../util/rut";
 import log from "../../config/logger";
-import elrutificadorByRut from "../../information-sources/elrutificador/search-by-rut";
+import elrutificadorByRut from "../../information-sources/el-rutificador/search-by-rut";
 
 export type SingleRutOptions = {
     type: "single-rut",

@@ -79,7 +79,7 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
 
             if (!opts.batchSize) await promise;
             else {
-                if (promises.length < opts.batchSize) promises.push(promise);
+                if (promises.length < opts.batchSize - 1) promises.push(promise);
                 else {
                     await Promise.all(promises);
                     promises.splice(0, promises.length);

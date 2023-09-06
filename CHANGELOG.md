@@ -1,5 +1,19 @@
 # nombrerutyfirma-dumper
 
+## 1.2.0
+
+### Minor Changes
+
+- Integrated elrutificador table generation v2
+- Added retry on banned_ip response from cloudflare
+- Integrated new elrutificador jwt generation v2
+- Added an error class that will allow to standarize errors across nryf-dumper
+
+### Patch Changes
+
+- Bumped `typescript` dev dependency version to 5.2.2
+- Bumped `@types/node` dev dependency version to `20.5.7`
+
 ## 1.1.0
 
 ### Minor Changes
@@ -11,6 +25,7 @@
 
 - Added `package.json` keywords.
 - Added `version:changeset` and `version:bump` npm scripts
+
 ## 1.0.3
 
 ### Patch Changes

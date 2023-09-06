@@ -3,6 +3,7 @@ import { calculateDv, formatRut } from "../../util/rut";
 import log from "../../config/logger";
 import elrutificadorByRut from "../../information-sources/el-rutificador/search-by-rut";
 import NombreRutYFirma from "../../information-sources/nombre-rut-y-firma";
+import { NRYFError } from "../../util/errors";
 
 export type SingleRutOptions = {
     type: "single-rut",
@@ -52,14 +53,16 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
             ;
             process.exit(0);
         }
-
-        if (opts.source === "nombrerutyfirma") {
+        else if (opts.source === "nombrerutyfirma") {
             await NombreRutYFirma.searchByRut(rut)
                 .then(JSON.stringify)
                 .then(log.info)
-                .catch((error: Error) => {
-                    if (!error.message) throw error;
-                    if (error.message !== "nombrerutyfirma_error: no table found in html") throw error;
+                .catch((error: NRYFError) => {
+                    if (error.code !== "data_not_found") {
+                        log.error(`${opts.source}: ${JSON.stringify(error)}`);
+                        throw error;
+                    }
+
                     log.info(`${opts.source}: data not found for rut ${rut}`);
                     process.exit(1);
                 })
@@ -73,6 +76,7 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
 
     if (opts.type === "ruts-range") {
         const promises = [];
+        var promise: Promise<any> = Promise.resolve(undefined);
 
         for (let i = opts.from;i <= opts.to;i++) {
             const rut = formatRut(`${i}-${calculateDv(i)}`);
@@ -82,15 +86,30 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
                 break;
             };
 
-            const promise = elrutificadorByRut(rut, opts.maxRetries)
-                .then(JSON.stringify)
-                .then(log.info)
-                .catch((error: Error) => {
-                    if (!error.message) throw error;
-                    if (error.message !== "elrutificador_error: no table found in html") throw error;
-                    log.info(`${opts.source}: data not found for rut ${rut}, skipping`);
-                })
-            ;
+            if (opts.source === "elrutificador") {
+                promise = elrutificadorByRut(rut, opts.maxRetries)
+                    .then(JSON.stringify)
+                    .then(log.info)
+                    .catch((error: Error) => {
+                        if (!error.message) throw error;
+                        if (error.message !== "elrutificador_error: no table found in html") throw error;
+                        log.info(`${opts.source}: data not found for rut ${rut}, skipping`);
+                    })
+                ;
+            }
+            else if (opts.source === "nombrerutyfirma") {
+                promise = NombreRutYFirma.searchByRut(rut, opts.maxRetries)
+                    .then(JSON.stringify)
+                    .then(log.info)
+                    .catch((error: NRYFError) => {
+                        if (error.code !== "data_not_found") {
+                            log.error(`${opts.source}: ${JSON.stringify(error)}`);
+                            throw error;
+                        }
+                        log.info(`${opts.source}: data not found for rut ${rut}, skipping`);
+                    })
+                ;
+            }
 
             if (!opts.batchSize) await promise;
             else {
@@ -100,6 +119,7 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
                     promises.splice(0, promises.length);
                 }
             }
+
         }
         
         await Promise.all(promises);
@@ -108,6 +128,7 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
 
     if (opts.type === "multiple-ruts") {
         const promises = [];
+        var promise: Promise<any> = Promise.resolve(undefined);
 
         for (const rutWithoutDv of opts.ruts) {
             const rut = formatRut(`${rutWithoutDv}-${calculateDv(rutWithoutDv)}`);
@@ -117,15 +138,30 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
                 break;
             };
 
-            const promise = elrutificadorByRut(rut, opts.maxRetries)
-                .then(JSON.stringify)
-                .then(log.info)
-                .catch((error: Error) => {
-                    if (!error.message) throw error;
-                    if (error.message !== "elrutificador_error: no table found in html") throw error;
-                    log.info(`${opts.source}: data not found for rut ${rut}, skipping`);
-                })
-            ;
+            if (opts.source === "elrutificador") {
+                promise = elrutificadorByRut(rut, opts.maxRetries)
+                    .then(JSON.stringify)
+                    .then(log.info)
+                    .catch((error: Error) => {
+                        if (!error.message) throw error;
+                        if (error.message !== "elrutificador_error: no table found in html") throw error;
+                        log.info(`${opts.source}: data not found for rut ${rut}, skipping`);
+                    })
+                ;
+            }
+            else if (opts.source === "nombrerutyfirma") {
+                promise = NombreRutYFirma.searchByRut(rut, opts.maxRetries)
+                    .then(JSON.stringify)
+                    .then(log.info)
+                    .catch((error: NRYFError) => {
+                        if (error.code !== "data_not_found") {
+                            log.error(`${opts.source}: ${JSON.stringify(error)}`);
+                            throw error;
+                        }
+                        log.info(`${opts.source}: data not found for rut ${rut}, skipping`);
+                    })
+                ;
+            }
 
             if (!opts.batchSize) await promise;
             else {

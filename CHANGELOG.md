@@ -1,5 +1,11 @@
 # nombrerutyfirma-dumper
 
+## 1.2.1
+
+### Patch Changes
+
+- 59d6e0f: Bumped `@types/node` dev dependency version to `20.5.9`
+
 ## 1.2.0
 
 ### Minor Changes
@@ -11,7 +17,7 @@
 
 ### Patch Changes
 
-- Bumped `typescript` dev dependency version to 5.2.2
+- Bumped `typescript` dev dependency version to `5.2.2`
 - Bumped `@types/node` dev dependency version to `20.5.7`
 
 ## 1.1.0

@@ -16,7 +16,6 @@ export default async function elrutificadorByRut(rut: string, maxRetries?: numbe
         log.debug(`elrutificador: retrieved token for rut ${rut}: ${token}`);
 
         const html = await retrieveHtml(token);
-        console.log(html);
         log.debug(`elrutificador: retrieved html for ${rut}`);
 
         const data = extractDataFromHtml(html);
@@ -125,7 +124,6 @@ async function retrieveHtml(token: string): Promise<string> {
         }
     });
 
-    console.log(response.data);
     return response.data
 }
 

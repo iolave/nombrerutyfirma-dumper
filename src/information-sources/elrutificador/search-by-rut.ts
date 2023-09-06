@@ -1,21 +1,22 @@
 import { unixTimestamp } from "../../util/date";
 import { NRYFError } from '../../util/errors';
 import log from "../../config/logger";
-import puppeteer from "puppeteer-extra";
-import StealthPlugin from "puppeteer-extra-plugin-stealth";
+// import puppeteer from "puppeteer-extra";
+// import StealthPlugin from "puppeteer-extra-plugin-stealth";
+import axios from "axios";
 
-puppeteer.use(StealthPlugin());
+// puppeteer.use(StealthPlugin());
 
 
-var cfToken = "";
 export default async function elrutificadorByRut(rut: string, maxRetries?: number): Promise<ElRutificadorResponse> {
     try {
         log.debug(`elrutificador: querying person by rut ${rut}`);
 
-        const token = await retrieveToken(rut, cfToken);
+        const token = await retrieveToken(rut);
         log.debug(`elrutificador: retrieved token for rut ${rut}: ${token}`);
 
-        const html = await retrieveHtml(token, cfToken);
+        const html = await retrieveHtml(token);
+        console.log(html);
         log.debug(`elrutificador: retrieved html for ${rut}`);
 
         const data = extractDataFromHtml(html);
@@ -98,107 +99,52 @@ function extractDataFromHtml(html: string): ElRutificadorResponse {
     };
 }
 
-async function retrieveHtml(token: string, cloudFlareToken: string): Promise<string> {
-    const url = new URL("https://elrutificador.com");
-    url.pathname = "/resultados/";
+async function retrieveHtml(token: string): Promise<string> {
+    const body = new FormData();
+    body.append("jwt", token);
 
-    const headers = new Headers();
-    headers.append("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8");
-    headers.append("Accept-Encoding", "gzip, deflate, br");
-    headers.append("Accept-Language", "en-US,en;q=0.8");
-    headers.append("Cache-Control", "no-cache");
-    headers.append("Connection", "keep-alive");
-    headers.append("Content-Type", "application/x-www-form-urlencoded");
-    headers.append("Cookie", `cf_clearance=${cloudFlareToken};cf_use_ob=0`);
-    headers.append("Host", `elrutificador.com`);
-    headers.append("Origin", `https://elrutificador.com`);
-    headers.append("Pragma", "no-cache");
-    headers.append("Referer", "https://elrutificador.com/");
-    headers.append("Sec-Ch-Ua", '"Chromium";v="116", "Not)A;Brand";v="24", "Brave";v="116"');
-    headers.append("Sec-Ch-Ua-Mobile", "?0");
-    headers.append("Sec-Ch-Ua-Platform", '"macOS"');
-    headers.append("Sec-Fetch-Dest", "document");
-    headers.append("Sec-Fetch-Mode", "navigate");
-    headers.append("Sec-Fetch-Site", "same-origin");
-    headers.append("Sec-Gpc", "1");
-    headers.append("Upgrade-Insecure-Requests", "1");
-    headers.append("User-Agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36");
-   
+    const response = await axios<any, { data: string }>({
+        method: "post",
+        url: "https://elrutificador.com/resultados",
+        data: body,
+        headers: {
+            "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7",
+            "Content-Encoding": "gzip, deflate, br",
+            "Accept-Language": "en-US,en;q=0.9",
+            "Content-Type": "application/x-www-form-urlencoded",
+            "Origin": "https://elrutificador.com",
+            "Pragma": "no-cache",
+            "Referer": "https://elrutificador.com/",
+            "Sec-Ch-Ua": "?0",
+            "Sec-Ch-Ua-Mobile": '"Chromium";v="116", "Not)A;Brand";v="24", "Google Chrome";v="116"',
+            "Sec-Ch-Ua-Platform": '"macOS"',
+            "Sec-Fetch-Dest": "document",
+            "Sec-Fetch-Mode": "navigate",
+            "Sec-Fetch-Site": "same-origin",
+            "Upgrade-Insecure-Requests": "1"
+        }
+    });
 
-    const formData = new FormData();
-    formData.append("jwt", token);
-    formData.append("MIME Type", "application/x-www-form-urlencoded");
-
-    const requestInit: RequestInit = {
-        method: "POST",
-        headers,
-        body: formData
-    }
-
-    
-    const response = await fetch(url, requestInit);
-    const responseText = await response.text();
-    // console.log(responseText);
-    
-    if (responseText.toUpperCase().includes("BANNED")) throw new NRYFError("elrutificador_error", "ip_banned", "Cloudflare banned the active ip");
-    if (responseText.toUpperCase().includes("ACCESS DENIED")) throw new NRYFError("elrutificador_error", "cf_clearance_expired", "");
-    
-    return responseText;
+    console.log(response.data);
+    return response.data
 }
 
-async function retrieveToken(rut: string, cloudFlareToken: string): Promise<string> {
-    const url = new URL("https://elrutificador.com");
+async function retrieveToken(rut: string): Promise<string> {
 
-    const headers = new Headers();
-    headers.append("Accept", "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8");
-    headers.append("Accept-Language", "en-US,en;q=0.8");
-    headers.append("Cache-Control", "no-cache");
-    headers.append("Cookie", `cf_clearance=rFkbmtyoUKIMgh3.3E0ds.7q_9ebT_ogx.VknAwziug-1693957581-0-1-e30fb622.ce8d8159.7f0595c2-0.2.1693957581;${cloudFlareToken}`);
-    headers.append("Origin", "https://elrutificador.com");
-    headers.append("Pragma", "no-cache");
-    headers.append("Referer", "https://elrutificador.com/");
-    headers.append("Sec-Ch-Ua", '"Chromium";v="116", "Not)A;Brand";v="24", "Brave";v="116"');
-    headers.append("Sec-Ch-Ua-Mobile", "?0");
-    headers.append("Sec-Ch-Ua-Platform", '"macOS"');
-    headers.append("Sec-Fetch-Dest", "document");
-    headers.append("Sec-Fetch-Mode", "navigate");
-    headers.append("Sec-Fetch-Site", "same-origin");
-    headers.append("Sec-Fetch-User", "?1");
-    headers.append("Sec-Gpc", "1");
-    headers.append("Upgrade-Insecure-Requests", "1");
-    headers.append("User-Agent", "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/116.0.0.0 Safari/537.36");
-    headers.append("Content-Type", "application/x-www-form-urlencoded");
+    const body = new FormData();
+    body.append("term", rut);
+    body.append("opt", "rut");
 
-    const formData = new FormData();
-    formData.set("term", rut);
-    formData.set("opt", "rut");
+    const response = await axios<any, { data: string }>({
+        method: "post",
+        url: "https://elrutificador.com",
+        data: body,
+    });
 
-    const requestInit: RequestInit = {
-        method: "POST",
-        headers,
-        body: formData,
-    }
-
-    const response = await fetch(url, requestInit);
-    const responseText = await response.text();
-
-    const match = responseText.match(/value='(.*)\.(.*)\.(.*)'/)
-
-    console.log(match, responseText)
-    process.exit(1);
-
-    // if (responseText.toUpperCase().includes("BANNED")) throw new NRYFError("elrutificador_error", "ip_banned", "Cloudflare banned the active ip");
-    // if (responseText.toUpperCase().includes("ACCESS DENIED")) throw new NRYFError("elrutificador_error", "cf_clearance_expired", "");
-
-
-    // const setCookieHeader = response.headers.get("Set-Cookie");
-    // if (!setCookieHeader) throw new NRYFError("elrutificador_error", "cf_clearance_expired", "");
-    // const cookies = setCookieHeader.split(";");
-    // const jwt = cookies.filter(c => c.includes("jwt=")).at(0);
-
-    // if (!jwt) throw new NRYFError("elrutificador_error", "no_jwt", "Failed to retrieve jwt token from the set-cookie header");
-    // return jwt.slice(4);
-    // return "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwczovL2VscnV0aWZpY2Fkb3IuY29tIiwiZXhwIjoyNjkzOTU1ODA3LCJuYmYiOjE2OTM5NTU4MDQsInRlcm0iOiIxOS40MDguMTM4LTMiLCJvcHQiOiJydXQifQ.4aVQUPI_Bpk1YtIXDfcpOB0uPryux5yKD-8sLzScWC0";
+    if (response.data.toUpperCase().includes("BANNED")) throw new NRYFError("elrutificador_error", "ip_banned", "Cloudflare banned the active ip");
+    const match = response.data.match(/value='(.*)\.(.*)\.(.*)'/)?.at(0);
+    if (!match) throw new NRYFError("elrutificador_error", "no_jwt", "no jwt found within response");
+    return match.slice(7,-12);
 }
 
 /* 

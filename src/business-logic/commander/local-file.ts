@@ -195,11 +195,11 @@ export default async function localFileAction(opts: LocalFileActionOptions): Pro
                 }
             }
 
-            await Promise.all(promises);
-            writeStream.close();
-            process.exit(0);
         }
-        process.exit(1);
+        
+        await Promise.all(promises);
+        writeStream.close();
+        process.exit(0);
     }
 
     if (opts.type === "multiple-ruts") {

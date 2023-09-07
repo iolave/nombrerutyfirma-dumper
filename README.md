@@ -66,3 +66,10 @@ nryf-dumper --source=elrutificador --ruts=123456,1234567 --output=local-file  --
 [BADGE-BUILD-MAIN]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/wiki/iolave/nombrerutyfirma-dumper/build-main.md&logo=github
 [BADGE-BUILD-ART-MAIN]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/wiki/iolave/nombrerutyfirma-dumper/build-artifacts-main.md&logo=github
 [BADGE-PUBLISH-MAIN]: https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/wiki/iolave/nombrerutyfirma-dumper/publish-main.md&logo=github
+
+## Logging
+NRYF Dumper logging is currently available for MacOS and Linux.
+
+These are the log paths for each OS:
+- MacOS: `$HOME/Library/Logs/nryf-dumper.log`
+- Linux: `/var/log/nryf-dumper.log`

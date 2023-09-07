@@ -1,3 +1,5 @@
+import os from 'os';
+import path from 'path';
 import { createLogger, format, transports } from "winston";
 
 const { combine, timestamp, printf } = format;
@@ -7,9 +9,32 @@ const logFormat = printf(({ level, message, timestamp }) => {
     return `${timestamp} [${level.toUpperCase()}]${spaces}${message}`;
 });
 
+function createTransports() {
+    const winstonTransports = [];
+
+    winstonTransports.push(new transports.Console());
+
+    if (os.platform() === 'linux') winstonTransports.push(new transports.File({
+        format: combine(timestamp(), logFormat),
+        tailable: true,
+        level: 'debug',
+        eol: os.EOL,
+        filename: path.join('/', 'var', 'log', 'nryf-dumper.log'),
+    }));
+    else if (os.platform() === "darwin") winstonTransports.push(new transports.File({
+        format: combine(timestamp(), logFormat),
+        tailable: true,
+        level: 'debug',
+        eol: os.EOL,
+        filename: path.join(os.homedir(), 'Library', 'Logs', 'nryf-dumper.log'),
+    }));
+
+    return winstonTransports;
+}
+
 const logger = createLogger({
     format: combine(timestamp(), logFormat),
-    transports: [new transports.Console()],
+    transports: createTransports(),
 });
 
 logger.level = "info";

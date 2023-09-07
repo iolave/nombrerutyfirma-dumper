@@ -45,6 +45,7 @@ nryf-dumper --source=elrutificador --ruts=123456,1234567 --output=local-file  --
 ### Available sources
 - elrutificador.com: `elrutificador`
 - nombrerutyfirma.com: `nombrerutyfirma`
+- rutificador.net: `rutificador-net`
 
 ### Available outputs
 - Console: `console`

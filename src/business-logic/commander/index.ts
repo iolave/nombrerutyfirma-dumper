@@ -71,7 +71,11 @@ export default async function commanderAction(opts: ProgramOptions): Promise<nev
     process.exit(1);
 }
 
-export const informationSources = ["elrutificador", "nombrerutyfirma"] as const;
+export const informationSources = [
+    "elrutificador",
+    "nombrerutyfirma",
+    "rutificador-net",
+] as const;
 export type InformationSource = typeof informationSources[number];
 
 export const destinations = ["console", "local-file"] as const;

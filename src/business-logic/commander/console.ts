@@ -3,6 +3,7 @@ import { calculateDv, formatRut } from "../../util/rut";
 import log from "../../config/logger";
 import elrutificadorByRut from "../../information-sources/el-rutificador/search-by-rut";
 import NombreRutYFirma from "../../information-sources/nombre-rut-y-firma";
+import RutificadorNet from "../../information-sources/rutificador-net";
 import { NRYFError } from "../../util/errors";
 
 export type SingleRutOptions = {
@@ -69,6 +70,22 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
             ;
             process.exit(0);
         }
+        else if (opts.source === "rutificador-net") {
+            await RutificadorNet.searchByRut(rut)
+                .then(JSON.stringify)
+                .then(log.info)
+                .catch((error: NRYFError) => {
+                    if (error.code !== "data_not_found") {
+                        log.error(`${opts.source}: ${JSON.stringify(error)}`);
+                        throw error;
+                    }
+
+                    log.info(`${opts.source}: data not found for rut ${rut}`);
+                    process.exit(1);
+                })
+            ;
+            process.exit(0);
+        }
 
         log.error(`${opts.source}: source information handler not found`);
         process.exit(1);
@@ -99,6 +116,19 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
             }
             else if (opts.source === "nombrerutyfirma") {
                 promise = NombreRutYFirma.searchByRut(rut, opts.maxRetries)
+                    .then(JSON.stringify)
+                    .then(log.info)
+                    .catch((error: NRYFError) => {
+                        if (error.code !== "data_not_found") {
+                            log.error(`${opts.source}: ${JSON.stringify(error)}`);
+                            throw error;
+                        }
+                        log.info(`${opts.source}: data not found for rut ${rut}, skipping`);
+                    })
+                ;
+            }
+            else if (opts.source === "rutificador-net") {
+                promise = RutificadorNet.searchByRut(rut, opts.maxRetries)
                     .then(JSON.stringify)
                     .then(log.info)
                     .catch((error: NRYFError) => {
@@ -151,6 +181,19 @@ export default async function consoleAction(opts: ConsoleActionOptions): Promise
             }
             else if (opts.source === "nombrerutyfirma") {
                 promise = NombreRutYFirma.searchByRut(rut, opts.maxRetries)
+                    .then(JSON.stringify)
+                    .then(log.info)
+                    .catch((error: NRYFError) => {
+                        if (error.code !== "data_not_found") {
+                            log.error(`${opts.source}: ${JSON.stringify(error)}`);
+                            throw error;
+                        }
+                        log.info(`${opts.source}: data not found for rut ${rut}, skipping`);
+                    })
+                ;
+            }
+            else if (opts.source === "rutificador-net") {
+                promise = RutificadorNet.searchByRut(rut, opts.maxRetries)
                     .then(JSON.stringify)
                     .then(log.info)
                     .catch((error: NRYFError) => {

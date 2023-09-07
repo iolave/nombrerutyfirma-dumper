@@ -7,6 +7,7 @@ import log from "../../config/logger";
 import elrutificadorByRut from "../../information-sources/el-rutificador/search-by-rut";
 import { NRYFError } from "../../util/errors";
 import NombreRutYFirma from "../../information-sources/nombre-rut-y-firma";
+import RutificadorNet from "../../information-sources/rutificador-net";
 
 export type SingleRutOptions = {
     type: "single-rut",
@@ -69,7 +70,30 @@ export default async function localFileAction(opts: LocalFileActionOptions): Pro
             process.exit(0);
         }
         else if (opts.source === "nombrerutyfirma") {
+            //FIXME: cambiar metodo
             await elrutificadorByRut(rut, opts.maxRetries)
+                .then(JSON.stringify)
+                .then(res => res.concat(EOL))
+                .then(Buffer.from)
+                .then((buf) => { writeStream.write(buf) })
+                .then(() => log.info(`${opts.source}: wrote found data for rut ${rut} to ${filePath}`))
+                .then(() => writeStream.close())
+                .catch((error: NRYFError) => {
+                    writeStream.close();
+                    if (error.code !== "data_not_found") {
+                        log.error(`${opts.source}: ${JSON.stringify(error)}`);
+                        throw error;
+                    }
+                    
+                    log.info(`${opts.source}: data not found for rut ${rut}`);
+                    process.exit(1);
+                })
+            ;
+
+            process.exit(0);
+        }
+        else if (opts.source === "rutificador-net") {
+            await RutificadorNet.searchByRut(rut, opts.maxRetries)
                 .then(JSON.stringify)
                 .then(res => res.concat(EOL))
                 .then(Buffer.from)
@@ -145,6 +169,22 @@ export default async function localFileAction(opts: LocalFileActionOptions): Pro
                     })
                 ;
             }
+            else if (opts.source === "rutificador-net") {
+                promise = RutificadorNet.searchByRut(rut, opts.maxRetries)
+                    .then(JSON.stringify)
+                    .then(res => res.concat(EOL))
+                    .then(Buffer.from)
+                    .then((buf) => { writeStream.write(buf) })
+                    .then(() => log.info(`${opts.source}: wrote found data for rut ${rut} to ${filePath}`))
+                    .catch((error: NRYFError) => {
+                        if (error.code !== "data_not_found") {
+                            writeStream.close();
+                            throw error;
+                        }
+                        log.info(`${opts.source}: data not found for rut ${rut}, skipping`);
+                    })
+                ;
+            }
 
             if (!opts.batchSize) await promise;
             else {
@@ -198,6 +238,22 @@ export default async function localFileAction(opts: LocalFileActionOptions): Pro
             }
             else if (opts.source === "nombrerutyfirma") {
                 promise = NombreRutYFirma.searchByRut(rut, opts.maxRetries)
+                    .then(JSON.stringify)
+                    .then(res => res.concat(EOL))
+                    .then(Buffer.from)
+                    .then((buf) => { writeStream.write(buf) })
+                    .then(() => log.info(`${opts.source}: wrote found data for rut ${rut} to ${filePath}`))
+                    .catch((error: NRYFError) => {
+                        if (error.code !== "data_not_found") {
+                            writeStream.close();
+                            throw error;
+                        }
+                        log.info(`${opts.source}: data not found for rut ${rut}, skipping`);
+                    })
+                ;
+            }
+            else if (opts.source === "rutificador-net") {
+                promise = RutificadorNet.searchByRut(rut, opts.maxRetries)
                     .then(JSON.stringify)
                     .then(res => res.concat(EOL))
                     .then(Buffer.from)

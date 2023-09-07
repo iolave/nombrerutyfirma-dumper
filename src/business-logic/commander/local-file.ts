@@ -70,8 +70,7 @@ export default async function localFileAction(opts: LocalFileActionOptions): Pro
             process.exit(0);
         }
         else if (opts.source === "nombrerutyfirma") {
-            //FIXME: cambiar metodo
-            await elrutificadorByRut(rut, opts.maxRetries)
+            NombreRutYFirma.searchByRut(rut, opts.maxRetries)
                 .then(JSON.stringify)
                 .then(res => res.concat(EOL))
                 .then(Buffer.from)
@@ -196,7 +195,7 @@ export default async function localFileAction(opts: LocalFileActionOptions): Pro
             }
 
         }
-        
+
         await Promise.all(promises);
         writeStream.close();
         process.exit(0);

@@ -5,6 +5,7 @@ import elrutificadorByRut from "../../information-sources/el-rutificador/search-
 import NombreRutYFirma from "../../information-sources/nombre-rut-y-firma";
 import { NRYFError } from "../../util/errors";
 import { MongoClient } from 'mongodb';
+import RutificadorNet from "../../information-sources/rutificador-net";
 
 export type SingleRutOptions = {
     type: "single-rut";
@@ -77,6 +78,22 @@ export default async function mongodbAction(opts: MongodbActionOptions): Promise
             ;
             process.exit(0);
         }
+        else if (opts.source === "rutificador-net") {
+            await RutificadorNet.searchByRut(rut)
+                .then(async res => { await mongoColl.insertOne(res) })
+                .then(() => log.info(`${opts.source}: wrote found data to database for rut ${rut}`))
+                .catch((error: NRYFError) => {
+                    if (error.code !== "data_not_found") {
+                        log.error(`${opts.source}: ${JSON.stringify(error)}`);
+                        throw error;
+                    }
+
+                    log.info(`${opts.source}: data not found for rut ${rut}`);
+                    process.exit(1);
+                })
+            ;
+            process.exit(0);
+        }
 
         log.error(`${opts.source}: source information handler not found`);
         process.exit(1);
@@ -107,6 +124,19 @@ export default async function mongodbAction(opts: MongodbActionOptions): Promise
             }
             else if (opts.source === "nombrerutyfirma") {
                 promise = NombreRutYFirma.searchByRut(rut, opts.maxRetries)
+                    .then(async res => { await mongoColl.insertOne(res) })
+                    .then(() => log.info(`${opts.source}: wrote found data to database for rut ${rut}`))
+                    .catch((error: NRYFError) => {
+                        if (error.code !== "data_not_found") {
+                            log.error(`${opts.source}: ${JSON.stringify(error)}`);
+                            throw error;
+                        }
+                        log.info(`${opts.source}: data not found for rut ${rut}, skipping`);
+                    })
+                ;
+            }
+            else if (opts.source === "rutificador-net") {
+                promise = RutificadorNet.searchByRut(rut, opts.maxRetries)
                     .then(async res => { await mongoColl.insertOne(res) })
                     .then(() => log.info(`${opts.source}: wrote found data to database for rut ${rut}`))
                     .catch((error: NRYFError) => {
@@ -158,6 +188,19 @@ export default async function mongodbAction(opts: MongodbActionOptions): Promise
             }
             else if (opts.source === "nombrerutyfirma") {
                 promise = NombreRutYFirma.searchByRut(rut, opts.maxRetries)
+                    .then(async res => { await mongoColl.insertOne(res) })
+                    .then(() => log.info(`${opts.source}: wrote found data to database for rut ${rut}`))
+                    .catch((error: NRYFError) => {
+                        if (error.code !== "data_not_found") {
+                            log.error(`${opts.source}: ${JSON.stringify(error)}`);
+                            throw error;
+                        }
+                        log.info(`${opts.source}: data not found for rut ${rut}, skipping`);
+                    })
+                ;
+            }
+            else if (opts.source === "rutificador-net") {
+                promise = RutificadorNet.searchByRut(rut, opts.maxRetries)
                     .then(async res => { await mongoColl.insertOne(res) })
                     .then(() => log.info(`${opts.source}: wrote found data to database for rut ${rut}`))
                     .catch((error: NRYFError) => {

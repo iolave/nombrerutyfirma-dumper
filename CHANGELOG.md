@@ -1,5 +1,19 @@
 # nombrerutyfirma-dumper
 
+## 1.4.0
+
+### Minor Changes
+
+- 11fdf4d: Added commander mongodb action
+- 641f79c: Added logging for MacOS and Linux
+- 845dec7: Added `--option=mongodb` and `--uri=[connection-string]` options
+- 593df69: Added `rutificador-net` information source
+
+### Patch Changes
+
+- 27fd607: Fixed a bug on local-file:single-rut `nombrerutyfirma` source that used `elrutificador` source instead of the proper one
+- 536f05d: Fixed a bug that caused the local-file writestream to close on a loop cycle
+
 ## 1.3.0
 
 ### Minor Changes

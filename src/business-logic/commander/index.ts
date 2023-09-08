@@ -2,7 +2,7 @@ import { tmpdir } from "os";
 import consoleAction from "./console";
 import localFileAction from "./local-file";
 import { ProgramOptions } from "../../cli";
-import log from "../../config/logger";
+import mongodbAction from "./mongodb";
 
 export default async function commanderAction(opts: ProgramOptions): Promise<never> {
     if (opts.output === "console") {
@@ -68,8 +68,35 @@ export default async function commanderAction(opts: ProgramOptions): Promise<nev
         }
     }
     else if (opts.output === "mongodb") {
-        // TODO: add mongodb logic
-        log.info(JSON.stringify(opts))
+        if (opts.queryType === "single-rut") {
+            await mongodbAction({
+                type: opts.queryType,
+                rut: opts.rut,
+                source: opts.source,
+                maxRetries: opts.maxRetries,
+                uri: opts.uri??"",
+            });
+        }
+        else if (opts.queryType === "ruts-range") {
+            await mongodbAction({
+                type: opts.queryType,
+                from: opts.fromRut,
+                to: opts.toRut,
+                source: opts.source,
+                maxRetries: opts.maxRetries,
+                uri: opts.uri??"",
+            });
+        }
+        else if (opts.queryType === "multiple-ruts") {
+            await mongodbAction({
+                type: opts.queryType,
+                ruts: opts.ruts,
+                source: opts.source,
+                maxRetries: opts.maxRetries,
+                uri: opts.uri??"",
+            });
+        }
+        
         process.exit(0)
     }
 

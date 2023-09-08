@@ -50,6 +50,8 @@ nryf-dumper --source=elrutificador --ruts=123456,1234567 --output=local-file  --
 - Console: `console`
 - Local file: `local-file`
     - Required option: `--out-path=[path] # i.e. --out-path=/tmp/file.json`
+- MongoDB: `mongodb`
+    - Required option: `--uri=[connection string] # i.e. --uri=mongodb://127.0.0.1/`
 
 
 ### Available input options

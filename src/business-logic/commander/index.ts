@@ -2,6 +2,7 @@ import { tmpdir } from "os";
 import consoleAction from "./console";
 import localFileAction from "./local-file";
 import { ProgramOptions } from "../../cli";
+import log from "../../config/logger";
 
 export default async function commanderAction(opts: ProgramOptions): Promise<never> {
     if (opts.output === "console") {
@@ -33,10 +34,8 @@ export default async function commanderAction(opts: ProgramOptions): Promise<nev
             });
         }
     }
-
-    if (opts.output === "local-file") {
+    else if (opts.output === "local-file") {
         const path = opts.outPath ?? tmpdir();
-        
         if (opts.queryType === "single-rut") {
             await localFileAction({
                 type: opts.queryType,
@@ -68,11 +67,21 @@ export default async function commanderAction(opts: ProgramOptions): Promise<nev
             });
         }
     }
+    else if (opts.output === "mongodb") {
+        // TODO: add mongodb logic
+        log.info(JSON.stringify(opts))
+        process.exit(0)
+    }
+
     process.exit(1);
 }
 
 export const informationSources = ["elrutificador", "nombrerutyfirma"] as const;
 export type InformationSource = typeof informationSources[number];
 
-export const destinations = ["console", "local-file"] as const;
+export const destinations = [
+    'console', 
+    'local-file', 
+    'mongodb',
+] as const;
 export type Destination = typeof destinations[number];

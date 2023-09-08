@@ -15,15 +15,21 @@ export default function parseProgram(): ProgramOptions {
     else setLogLevel(args.verbose); // 7 refers to debug
 
     if (args.output === "console") {
-        if (args.outPath) {
-            program.error(`error: option '--out-path <path>' can not be used with '--output ${args.output}'`)
-        }
+        // CONFLICTS
+        if (args.outPath) program.error(`error: option '${outPathOptionFlags}' can not be used alongside '--output ${args.output}'`)
+        if (args.uri) program.error(`error: option '${uriOptionFlags}' can not be used alongside '--output ${args.output}'`)
     }
-    
-    if (args.output === "local-file") {
-        if (!args.outPath) {
-            program.error(`error: required option '--out-path <path>' not specified`)
-        }
+    else if (args.output === "local-file") {
+        // CONFLICTS
+        if (args.uri) program.error(`error: option '${uriOptionFlags}' can not be used alongside '--output ${args.output}'`)
+        // REQUIRED
+        if (!args.outPath) program.error(`error: required option '${outPathOptionFlags}' not specified`)
+    }
+    else if (args.output === 'mongodb') {
+        // CONFLICTS
+        if (args.outPath) program.error(`error: option '${outPathOptionFlags}' can not be used alongside '--output ${args.output}'`)
+        // REQUIRED
+        if (!args.uri) program.error(`error: required option '${uriOptionFlags}' not specified`)
     }
 
     if (args.queryType === "single-rut") {
@@ -53,11 +59,13 @@ export default function parseProgram(): ProgramOptions {
 }
 
 // TODO: use zod for this
+// TODO: or use custom types for each dest
 interface ProgramOptionsBase {
     verbose?: boolean | number;
     source: InformationSource;
     output: Destination;
     outPath?: string;
+    uri?: string;
     maxRetries?: number;
 }
 
@@ -102,6 +110,10 @@ outputOption.makeOptionMandatory(true);
 const outPathOptionFlags = "--out-path <path>";
 const outPathOption = new Option(outPathOptionFlags, "out path");
 outPathOption.makeOptionMandatory(false);
+
+const uriOptionFlags = "--uri <connection string>";
+const uriOption = new Option(uriOptionFlags, "database connection string (destination: [mongodb])");
+uriOption.makeOptionMandatory(false);
 
 const rutOptionFlags = "--rut <rut without dv>";
 const rutOption = new Option(rutOptionFlags, "search a single rut");
@@ -152,6 +164,7 @@ program.addOption(verboseOption);
 program.addOption(sourceOption);
 program.addOption(outputOption);
 program.addOption(outPathOption);
+program.addOption(uriOption);
 program.addOption(rutOption);
 program.addOption(fromRutOption);
 program.addOption(toRutOption);

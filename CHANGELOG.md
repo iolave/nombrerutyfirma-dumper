@@ -1,5 +1,11 @@
 # nombrerutyfirma-dumper
 
+## 1.4.1
+
+### Patch Changes
+
+- Fixed the `--batch-size` option on `--output=mongodb` so now it's working
+
 ## 1.4.0
 
 ### Minor Changes

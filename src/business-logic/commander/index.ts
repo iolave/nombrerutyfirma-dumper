@@ -84,6 +84,7 @@ export default async function commanderAction(opts: ProgramOptions): Promise<nev
                 to: opts.toRut,
                 source: opts.source,
                 maxRetries: opts.maxRetries,
+                batchSize: opts.batchSize,
                 uri: opts.uri??"",
             });
         }
@@ -93,6 +94,7 @@ export default async function commanderAction(opts: ProgramOptions): Promise<nev
                 ruts: opts.ruts,
                 source: opts.source,
                 maxRetries: opts.maxRetries,
+                batchSize: opts.batchSize,
                 uri: opts.uri??"",
             });
         }

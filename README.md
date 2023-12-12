@@ -1,4 +1,4 @@
-# NRYF Dumper - CLI tool to web scrap chileans personal information
+# NRYF Dumper - CLI tool to web scrap chileans personal information [DEPRECATED]
 
 ![][BADGE-TEST-MAIN] ![][BADGE-BUILD-MAIN] ![][BADGE-BUILD-ART-MAIN] ![][BADGE-PUBLISH-MAIN]
 
